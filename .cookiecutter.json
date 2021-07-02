@@ -1,0 +1,11 @@
+{
+  "_template": "gh:cjolowicz/cookiecutter-hypermodern-python",
+  "author": "Stephane Collot",
+  "email": "stephane.collot@ing.com",
+  "friendly_name": "sparkmon",
+  "github_user": "stephanecollot",
+  "license": "Apache-2.0",
+  "package_name": "sparkmon",
+  "project_name": "sparkmon",
+  "version": "0.0.0"
+}
