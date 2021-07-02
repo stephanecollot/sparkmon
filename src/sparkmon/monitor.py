@@ -1,20 +1,23 @@
 """Monitor thread."""
-import sparkmon
 import threading
 import time
-import random
 import urllib
+
+import sparkmon
+
 
 class SparkMon(threading.Thread):
     """Class to manage a socket in a background thread to talk to the scala listener."""
 
-    def __init__(self, application: sparkmon.Application, period=20, callbacks=[]):
+    def __init__(self, application: sparkmon.Application, period=20, callbacks=None):
         """Constructor, initializes base class Thread."""
         threading.Thread.__init__(self)
         self._stop = threading.Event()
         self.cnt = 0
         self._application = application
         self.period = period
+        if callbacks is None:
+            callbacks = []
         self.callbacks = callbacks
         self.updateEvent = threading.Event()
 
@@ -28,7 +31,7 @@ class SparkMon(threading.Thread):
 
     def run(self):
         """Overrides Thread method."""
-        while(True):
+        while True:
             if self.stopped():
                 return
 
@@ -48,8 +51,8 @@ class SparkMon(threading.Thread):
             time.sleep(self.period)
 
     def live_plot_notebook(self):
-        """Useful in the remote case only"""
-        while(True):
+        """Useful in the remote case only."""
+        while True:
             if self.stopped():
                 return
 

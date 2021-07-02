@@ -1,11 +1,11 @@
 """Test cases for the application module."""
-import pytest
-import sparkmon
 import time
+
+import sparkmon
 
 
 def test_create_application_from_spark(spark) -> None:
-    """Basic test"""
+    """Basic test."""
     application = sparkmon.create_application_from_spark(spark)
 
     mon = sparkmon.SparkMon(application, period=5)
@@ -17,7 +17,7 @@ def test_create_application_from_spark(spark) -> None:
 
 
 def test_create_application_from_link(spark) -> None:
-    """Basic test"""
+    """Basic test."""
     application = sparkmon.create_application_from_link()
 
     mon = sparkmon.SparkMon(application, period=5)

@@ -66,7 +66,7 @@ or the command-line interface:
 If you want to install it in your environment:
 
 .. code:: console
-   
+
    $ poetry build --format sdist tar -xvf dist/*-`poetry version -s`.tar.gz -O '*/setup.py' > setup.py
    $ pip install -e .
 

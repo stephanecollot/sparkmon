@@ -1,7 +1,8 @@
 """Utilities functions."""
-import os
-import psutil
 import math
+import os
+
+import psutil  # type: ignore
 
 
 def convert_size(size_bytes: int) -> str:
