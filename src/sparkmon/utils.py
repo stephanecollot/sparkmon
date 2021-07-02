@@ -3,7 +3,7 @@ import math
 import os
 from typing import Any
 
-import psutil  # type: ignore
+import psutil
 
 
 def convert_size(size_bytes: int) -> str:

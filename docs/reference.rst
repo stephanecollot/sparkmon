@@ -6,6 +6,13 @@ Reference
     :backlinks: none
 
 
+sparkmon
+-----------------
+
+.. automodule:: sparkmon
+   :members:
+
+
 sparkmon.__main__
 -----------------
 

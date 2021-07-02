@@ -59,9 +59,13 @@ class SparkMon(threading.Thread):
             self.updateEvent.set()
             time.sleep(self.period)
 
-    def live_plot_notebook(self) -> None:
+    def live_plot_notebook(self, n_iter=None) -> None:
         """Useful in the remote case only."""
+        cnt = 0
         while True:
+            cnt += 1
+            if n_iter is not None and cnt > n_iter:
+                return
             if self.stopped():
                 return
 

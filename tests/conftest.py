@@ -1,14 +1,5 @@
-"""Pytest config."""
-import pytest
-from pyspark.sql import SparkSession
+"""Pytest config file."""
+import matplotlib.pyplot as plt
 
-
-@pytest.fixture(scope="session")
-def spark(request: pytest.FixtureRequest) -> SparkSession:
-    """Pytest fixture for creating the spark session.
-
-    Creating a fixture enables it to reuse the spark contexts across all tests.
-    """
-    spark = SparkSession.builder.getOrCreate()
-    request.addfinalizer(spark.stop)
-    return spark
+# To avoid the following error: "RuntimeError: main thread is not in main loop"
+plt.switch_backend("agg")

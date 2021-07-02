@@ -3,9 +3,9 @@ from datetime import datetime
 from typing import Any
 from typing import Dict
 
-import pandas as pd  # type: ignore
-import psutil  # type: ignore
-import urlpath  # type: ignore
+import pandas as pd
+import psutil
+import urlpath
 from pyspark.sql import SparkSession
 
 import sparkmon

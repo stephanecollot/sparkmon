@@ -3,10 +3,10 @@ from typing import Any
 from typing import Callable
 from typing import Dict
 
-import matplotlib  # type: ignore
-import matplotlib.pyplot as plt  # type: ignore
-import pandas as pd  # type: ignore
-from IPython import display  # type: ignore
+import matplotlib
+import matplotlib.pyplot as plt
+import pandas as pd
+from IPython import display
 
 import sparkmon
 from sparkmon.utils import convert_size
@@ -15,6 +15,9 @@ from sparkmon.utils import convert_size
 def plot_db(executors_db: Dict[Any, Any]) -> None:
     """Plot executors DB."""
     executors_db_df = pd.DataFrame(executors_db).T
+
+    if len(executors_db_df) == 0:
+        return
 
     def plot_max_value(
         ax: matplotlib.axes.Axes, s: Any, string_rep: Callable = lambda x: f"{x:0.2f}"
