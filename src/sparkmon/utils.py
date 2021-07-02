@@ -6,7 +6,7 @@ from typing import Any
 import psutil
 
 
-def convert_size(size_bytes: int) -> str:
+def convert_size(size_bytes) -> str:
     """Convert bytes in human readble string."""
     if size_bytes <= 0:
         return f"{size_bytes:.2f}B"
