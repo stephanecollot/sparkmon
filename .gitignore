@@ -154,5 +154,3 @@ cython_debug/
 
 # Automatically generate from pyproject.toml:
 setup.py
-
-poetry.lock
