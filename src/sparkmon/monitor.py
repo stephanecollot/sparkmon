@@ -2,6 +2,10 @@
 import threading
 import time
 import urllib
+from typing import Any
+from typing import Callable
+from typing import List
+from typing import Optional
 
 import sparkmon
 
@@ -9,7 +13,12 @@ import sparkmon
 class SparkMon(threading.Thread):
     """Class to manage a socket in a background thread to talk to the scala listener."""
 
-    def __init__(self, application: sparkmon.Application, period=20, callbacks=None):
+    def __init__(
+        self,
+        application: sparkmon.Application,
+        period: int = 20,
+        callbacks: Optional[List[Callable[..., Any]]] = None,
+    ) -> None:
         """Constructor, initializes base class Thread."""
         threading.Thread.__init__(self)
         self._stop = threading.Event()
@@ -21,15 +30,15 @@ class SparkMon(threading.Thread):
         self.callbacks = callbacks
         self.updateEvent = threading.Event()
 
-    def stop(self):
+    def stop(self) -> None:
         """To stop the thread."""
         self._stop.set()
 
-    def stopped(self):
+    def stopped(self) -> bool:
         """Overrides Thread method."""
         return self._stop.isSet()
 
-    def run(self):
+    def run(self) -> None:
         """Overrides Thread method."""
         while True:
             if self.stopped():
@@ -50,7 +59,7 @@ class SparkMon(threading.Thread):
             self.updateEvent.set()
             time.sleep(self.period)
 
-    def live_plot_notebook(self):
+    def live_plot_notebook(self) -> None:
         """Useful in the remote case only."""
         while True:
             if self.stopped():

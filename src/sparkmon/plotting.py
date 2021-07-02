@@ -1,10 +1,12 @@
 """Plotting utilities."""
 from typing import Any
+from typing import Callable
 from typing import Dict
 
-import matplotlib.pyplot as plt
-import pandas as pd
-from IPython import display
+import matplotlib  # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
+import pandas as pd  # type: ignore
+from IPython import display  # type: ignore
 
 import sparkmon
 from sparkmon.utils import convert_size
@@ -14,7 +16,9 @@ def plot_db(executors_db: Dict[Any, Any]) -> None:
     """Plot executors DB."""
     executors_db_df = pd.DataFrame(executors_db).T
 
-    def plot_max_value(ax: plt.Axes, s: Any, string_rep=lambda x: f"{x:0.2f}") -> None:
+    def plot_max_value(
+        ax: matplotlib.axes.Axes, s: Any, string_rep: Callable = lambda x: f"{x:0.2f}"
+    ) -> None:
         ax.annotate(
             string_rep(s.max()),
             xy=(1, s.max()),
@@ -24,7 +28,12 @@ def plot_db(executors_db: Dict[Any, Any]) -> None:
         )
 
     def mmm_plot(
-        ax: plt.Axes, value, executors_db_df, title_prefix, pct=False, ylim=None
+        ax: matplotlib.axes.Axes,
+        value: str,
+        executors_db_df: pd.DataFrame,
+        title_prefix: str,
+        pct: bool = False,
+        ylim: Any = None,
     ) -> None:
         ax.set_title(f"{title_prefix}{value}:")
         if f"{value}_max" not in executors_db_df.columns:

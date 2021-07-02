@@ -3,9 +3,10 @@ from datetime import datetime
 from typing import Any
 from typing import Dict
 
-import pandas as pd
-import psutil
-import urlpath
+import pandas as pd  # type: ignore
+import psutil  # type: ignore
+import urlpath  # type: ignore
+from pyspark.sql import SparkSession
 
 import sparkmon
 from sparkmon.utils import get_memory
@@ -22,7 +23,7 @@ class Application:
         self.spark_session_link = spark_session_link
         self.application_id = application_id
 
-        self.executors_db = {}
+        self.executors_db: Dict[Any, Any] = {}
 
     def get_executors_info(self) -> pd.DataFrame:
         """Retrieve executors info."""
@@ -93,7 +94,9 @@ class Application:
             executors_df["memoryUsed"] / executors_df["maxMemory"] * 100
         )
 
-        def mmm(d, executors_df, col):
+        def mmm(
+            d: Dict[str, Any], executors_df: pd.DataFrame, col: str
+        ) -> Dict[str, Any]:
             if col not in executors_df.columns:
                 return d
             d[f"{col}_max"] = executors_df[col].max()
@@ -103,7 +106,7 @@ class Application:
 
             return d
 
-        d = {}
+        d: Dict[str, Any] = {}
         d = mmm(d, executors_df, "memoryUsedPct")
         d = mmm(d, executors_df, "usedOnHeapStorageMemoryPct")
         d = mmm(d, executors_df, "usedOffHeapStorageMemoryPct")
@@ -126,7 +129,7 @@ class Application:
         return d
 
 
-def get_application_ids(spark_session_link=SPARK_SESSION_LINK) -> pd.DataFrame:
+def get_application_ids(spark_session_link: str = SPARK_SESSION_LINK) -> pd.DataFrame:
     """Retrieve available application id."""
     applications_df = pd.read_json(
         urlpath.URL(spark_session_link, API_APPLICATIONS_LINK)
@@ -135,7 +138,7 @@ def get_application_ids(spark_session_link=SPARK_SESSION_LINK) -> pd.DataFrame:
 
 
 def create_application_from_link(
-    id=0, spark_session_link=SPARK_SESSION_LINK
+    id: int = 0, spark_session_link: str = SPARK_SESSION_LINK
 ) -> Application:
     """Create an Application."""
     applications_df = get_application_ids(spark_session_link)
@@ -146,7 +149,7 @@ def create_application_from_link(
     return application
 
 
-def create_application_from_spark(spark) -> Application:
+def create_application_from_spark(spark: SparkSession) -> Application:
     """Create an Application from Spark Session."""
     spark_session_link = spark.sparkContext.uiWebUrl
     application_id = spark.sparkContext.applicationId

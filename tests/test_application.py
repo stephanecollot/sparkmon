@@ -1,10 +1,12 @@
 """Test cases for the application module."""
 import time
 
+from pyspark.sql import SparkSession
+
 import sparkmon
 
 
-def test_create_application_from_spark(spark) -> None:
+def test_create_application_from_spark(spark: SparkSession) -> None:
     """Basic test."""
     application = sparkmon.create_application_from_spark(spark)
 
@@ -16,7 +18,7 @@ def test_create_application_from_spark(spark) -> None:
     assert mon.cnt == 3
 
 
-def test_create_application_from_link(spark) -> None:
+def test_create_application_from_link(spark: SparkSession) -> None:
     """Basic test."""
     application = sparkmon.create_application_from_link()
 
