@@ -1,6 +1,7 @@
 """Utilities functions."""
 import math
 import os
+from typing import Any
 
 import psutil  # type: ignore
 
@@ -16,7 +17,7 @@ def convert_size(size_bytes: int) -> str:
     return "%s %s" % (s, size_name[i])
 
 
-def get_memory() -> int:
+def get_memory() -> Any:
     """Get current memory usage in bytes."""
     process = psutil.Process(os.getpid())
     return process.memory_info().rss  # in bytes

@@ -24,7 +24,7 @@ class Application:
 
         self.executors_db = {}
 
-    def get_executors_info(self) -> Dict[Any, Any]:
+    def get_executors_info(self) -> pd.DataFrame:
         """Retrieve executors info."""
         executors_df = pd.read_json(
             urlpath.URL(

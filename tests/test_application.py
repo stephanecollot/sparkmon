@@ -11,7 +11,7 @@ def test_create_application_from_spark(spark) -> None:
     mon = sparkmon.SparkMon(application, period=5)
     mon.start()
 
-    time.sleep(12)
+    time.sleep(13)
     mon.stop()
     assert mon.cnt == 3
 
@@ -23,6 +23,6 @@ def test_create_application_from_link(spark) -> None:
     mon = sparkmon.SparkMon(application, period=5)
     mon.start()
 
-    time.sleep(12)
+    time.sleep(13)
     mon.stop()
     assert mon.cnt == 3
