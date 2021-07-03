@@ -36,13 +36,17 @@ sparkmon
 Features
 --------
 
-* TODO
+* Logs the executors metrics
+* Create a monitoring thread directly in your PySpark application
+* Plot monitoring for a remote Spark application in a notebook, or in a file
+* Command line interface for a remote Spark application
 
 
 Requirements
 ------------
 
-* TODO
+* Python
+* Spark
 
 
 Installation

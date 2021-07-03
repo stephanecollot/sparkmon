@@ -154,3 +154,5 @@ cython_debug/
 
 # Automatically generate from pyproject.toml:
 setup.py
+
+sparkmon.png
