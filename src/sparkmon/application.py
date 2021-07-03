@@ -12,15 +12,15 @@ import sparkmon
 from sparkmon.utils import get_memory
 
 API_APPLICATIONS_LINK = "api/v1/applications"
-SPARK_SESSION_LINK = "http://localhost:4040"
+WEB_URL = "http://localhost:4040"
 
 
 class Application:
     """This class is an helper to query Spark API and save historical."""
 
-    def __init__(self, spark_session_link: str, application_id: str) -> None:
+    def __init__(self, web_url: str, application_id: str) -> None:
         """An application is define by the Spark UI link and an application id."""
-        self.spark_session_link = spark_session_link
+        self.web_url = web_url
         self.application_id = application_id
 
         self.executors_db: Dict[Any, Any] = {}
@@ -29,7 +29,7 @@ class Application:
         """Retrieve executors info."""
         executors_df = pd.read_json(
             urlpath.URL(
-                self.spark_session_link,
+                self.web_url,
                 API_APPLICATIONS_LINK,
                 self.application_id,
                 "executors",
@@ -129,31 +129,27 @@ class Application:
         return d
 
 
-def get_application_ids(spark_session_link: str = SPARK_SESSION_LINK) -> pd.DataFrame:
+def get_application_ids(web_url: str = WEB_URL) -> pd.DataFrame:
     """Retrieve available application id."""
-    applications_df = pd.read_json(
-        urlpath.URL(spark_session_link, API_APPLICATIONS_LINK)
-    )
+    applications_df = pd.read_json(urlpath.URL(web_url, API_APPLICATIONS_LINK))
     return applications_df
 
 
-def create_application_from_link(
-    id: int = 0, spark_session_link: str = SPARK_SESSION_LINK
-) -> Application:
+def create_application_from_link(index: int = 0, web_url: str = WEB_URL) -> Application:
     """Create an Application."""
-    applications_df = get_application_ids(spark_session_link)
-    application_id = applications_df["id"].iloc[id]
+    applications_df = get_application_ids(web_url)
+    application_id = applications_df["id"].iloc[index]
 
-    application = Application(spark_session_link, application_id)
+    application = Application(web_url, application_id)
 
     return application
 
 
 def create_application_from_spark(spark: SparkSession) -> Application:
     """Create an Application from Spark Session."""
-    spark_session_link = spark.sparkContext.uiWebUrl
+    web_url = spark.sparkContext.uiWebUrl
     application_id = spark.sparkContext.applicationId
 
-    application = Application(spark_session_link, application_id)
+    application = Application(web_url, application_id)
 
     return application

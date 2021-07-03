@@ -6,10 +6,31 @@ Reference
     :backlinks: none
 
 
-sparkmon
+sparkmon.monitor
 -----------------
 
-.. automodule:: sparkmon
+.. automodule:: sparkmon.monitor
+   :members:
+
+
+sparkmon.callbacks
+------------------
+
+.. automodule:: sparkmon.callbacks
+   :members:
+
+
+sparkmon.plotting
+-----------------
+
+.. automodule:: sparkmon.plotting
+   :members:
+
+
+sparkmon.utils
+-----------------
+
+.. automodule:: sparkmon.utils
    :members:
 
 
