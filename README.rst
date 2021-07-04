@@ -36,6 +36,9 @@ sparkmon
 Features
 --------
 
+Monitoring plot example:
+.. image:: docs/images/monitoring-plot-example.png
+
 * Logs the executors metrics
 * Create a monitoring thread directly in your PySpark application
 * Plot monitoring for a remote Spark application in a notebook, or in a file

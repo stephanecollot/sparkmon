@@ -49,7 +49,9 @@ class SparkMon(threading.Thread):
                 self.cnt += 1
             except urllib.error.URLError as ex:
                 if self.cnt > 1:
-                    print(f"Spark application not available anymore. Exception: {ex}")
+                    print(
+                        f"sparkmon: Spark application not available anymore. Exception: {ex}"
+                    )
                     self.stop()
                     return
 
