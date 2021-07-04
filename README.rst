@@ -37,6 +37,7 @@ Features
 --------
 
 Monitoring plot example:
+
 .. image:: docs/images/monitoring-plot-example.png
 
 * Logs the executors metrics
