@@ -13,7 +13,7 @@ sparkmon
 .. |Python Version| image:: https://img.shields.io/pypi/pyversions/sparkmon
    :target: https://pypi.org/project/sparkmon
    :alt: Python Version
-.. |License| image:: https://img.shields.io/pypi/l/sparkmon
+.. |License| image:: https://img.shields.io/pypi/l/sparkmon?
    :target: https://opensource.org/licenses/Apache-2.0
    :alt: License
 .. |Read the Docs| image:: https://img.shields.io/readthedocs/sparkmon/latest.svg?label=Read%20the%20Docs
