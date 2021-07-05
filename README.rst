@@ -44,6 +44,7 @@ Monitoring plot example:
 * Plot monitoring, display in a notebook, or export to a file
 * Can monitor remote Spark application
 * Can run directly in your PySpark application, or run in a notebook, or via the command-line interface
+* Log to mlflow
 
 
 Requirements
@@ -51,6 +52,7 @@ Requirements
 
 * Python
 * Spark
+* mlflow (optinal)
 
 
 Installation
@@ -61,6 +63,7 @@ You can install *sparkmon* via pip_ from PyPI_:
 .. code:: console
 
    $ pip install sparkmon
+   $ pip install sparkmon[mlflow]
 
 
 Usage
@@ -77,9 +80,10 @@ Usage
    application = sparkmon.create_application_from_link(index=0, web_url='http://localhost:4040')
 
    # Create and start the monitoring process
-   mon = sparkmon.SparkMon(
-       application, period=5, callbacks=[sparkmon.callbacks.plot_to_image]
-   )
+   mon = sparkmon.SparkMon(application, period=5, callbacks=[
+       sparkmon.callbacks.plot_to_image,
+       sparkmon.callbacks.log_to_mlflow,
+   ])
    mon.start()
 
    # Stop monitoring

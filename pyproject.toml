@@ -36,7 +36,7 @@ pathlib = "*"
 mlflow = { version = "*", optional = true }
 
 [tool.poetry.extras]
-mlflow_dep = ["mlflow"]
+mlflow = ["mlflow"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
@@ -62,7 +62,7 @@ sphinx-rtd-theme = "^0.5.2"
 sphinx-click = "^3.0.1"
 nbsphinx = '*'
 Pygments = "^2.9.0"
-mlflow_dep = ["mlflow"]
+mlflow = ["mlflow"]
 
 [tool.poetry.scripts]
 sparkmon = "sparkmon.__main__:main"

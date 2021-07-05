@@ -29,7 +29,7 @@ def test_mlflow() -> None:
     application = sparkmon.create_application_from_spark(spark)
 
     mon = sparkmon.SparkMon(
-        application, period=5, callbacks=[sparkmon.callbacks.log_to_mlfow]
+        application, period=5, callbacks=[sparkmon.callbacks.log_to_mlflow]
     )
     mon.start()
 
