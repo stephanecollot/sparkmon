@@ -14,3 +14,4 @@
    Code of Conduct <codeofconduct>
    License <license>
    Changelog <https://github.com/stephanecollot/sparkmon/releases>
+   example

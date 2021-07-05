@@ -27,7 +27,7 @@ def main(index: int, url: str, period: int) -> None:
     application = sparkmon.create_application_from_link(index, url)
 
     mon = sparkmon.SparkMon(
-        application, period=period, callbacks=[sparkmon.callback_plot_to_image]
+        application, period=period, callbacks=[sparkmon.callbacks.plot_to_image]
     )
     mon.start()
     click.confirm(

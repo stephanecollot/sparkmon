@@ -30,6 +30,13 @@ urlpath = "*"
 psutil = "*"
 ipython = "*"
 
+# A list of all of the optional dependencies, some of which are included in the
+# below 'extras'. They can be opted into by apps.
+mlflow = { version = "*", optional = true }
+
+[tool.poetry.extras]
+mlflow_dep = ["mlflow"]
+
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
 coverage = {extras = ["toml"], version = "^5.4"}
@@ -52,7 +59,9 @@ reorder-python-imports = "^2.5.0"
 pre-commit-hooks = "^4.0.1"
 sphinx-rtd-theme = "^0.5.2"
 sphinx-click = "^3.0.1"
+nbsphinx = '*'
 Pygments = "^2.9.0"
+mlflow_dep = ["mlflow"]
 
 [tool.poetry.scripts]
 sparkmon = "sparkmon.__main__:main"

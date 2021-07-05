@@ -78,7 +78,7 @@ Usage
 
    # Create and start the monitoring process
    mon = sparkmon.SparkMon(
-       application, period=5, callbacks=[sparkmon.callback_plot_to_image]
+       application, period=5, callbacks=[sparkmon.callbacks.plot_to_image]
    )
    mon.start()
 

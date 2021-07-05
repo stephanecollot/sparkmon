@@ -39,7 +39,7 @@ def test_application_other() -> None:
     mon = sparkmon.SparkMon(application, period=1)
     mon.start()
     time.sleep(3)
-    mon._application.parse_db()
+    mon.application.parse_db()
     mon.stop()
 
 

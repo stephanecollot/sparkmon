@@ -23,7 +23,7 @@ class SparkMon(threading.Thread):
         threading.Thread.__init__(self)
         self._stop = threading.Event()
         self.cnt = 0
-        self._application = application
+        self.application = application
         self.period = period
         if callbacks is None:
             callbacks = []
@@ -45,7 +45,7 @@ class SparkMon(threading.Thread):
                 return
 
             try:
-                self._application.log_executors_info()
+                self.application.log_executors_info()
                 self.cnt += 1
             except urllib.error.URLError as ex:
                 if self.cnt > 1:
@@ -56,7 +56,7 @@ class SparkMon(threading.Thread):
                     return
 
             for callback in self.callbacks:
-                callback(self._application)
+                callback(self.application)
 
             self.updateEvent.set()
             time.sleep(self.period)
@@ -71,7 +71,7 @@ class SparkMon(threading.Thread):
             if self.stopped():
                 return
 
-            sparkmon.plot_notebook(self._application)
+            sparkmon.plot_notebook(self.application)
 
             self.updateEvent.clear()
             self.updateEvent.wait()
