@@ -9,3 +9,5 @@ python:
     - path: .
 build:
   image: testing
+  apt_packages:
+    - pandoc

@@ -89,7 +89,7 @@ Usage
    # Stop monitoring
    mon.stop()
 
-You can also use it from a notebook:
+You can also use it from a notebook: `Notebook Example <Example_>`_
 
 There is also a command-line interface, see  `Command-line Reference <Usage_>`_ for details.
 

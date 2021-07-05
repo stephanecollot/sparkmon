@@ -3,6 +3,7 @@
 
 .. _Contributor Guide: contributing.html
 .. _Usage: usage.html
+.. _Example: example.html
 
 .. toctree::
    :hidden:
