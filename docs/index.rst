@@ -3,6 +3,7 @@
 
 .. _Contributor Guide: contributing.html
 .. _Usage: usage.html
+.. _Example: example.html
 
 .. toctree::
    :hidden:
@@ -14,3 +15,4 @@
    Code of Conduct <codeofconduct>
    License <license>
    Changelog <https://github.com/stephanecollot/sparkmon/releases>
+   example

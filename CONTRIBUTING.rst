@@ -128,3 +128,18 @@ This will allow a chance to talk it over with the owners and validate your appro
 .. _pull request: https://github.com/stephanecollot/sparkmon/pulls
 .. github-only
 .. _Code of Conduct: CODE_OF_CONDUCT.rst
+
+
+How release a new version
+-------------------------
+
+Make a new branch, then:
+
+.. code:: console
+
+   $ poetry version <version>
+   $ git add pyproject.toml
+   $ git commit -m "<project> <version>"
+   $ git push
+
+Then make a pull request.

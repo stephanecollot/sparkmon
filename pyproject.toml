@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sparkmon"
-version = "0.0.1"
+version = "0.0.2"
 description = "sparkmon"
 authors = ["Stephane Collot <stephane.collot@ing.com>"]
 license = "Apache-2.0"
@@ -29,6 +29,14 @@ matplotlib = "*"
 urlpath = "*"
 psutil = "*"
 ipython = "*"
+pathlib = "*"
+
+# A list of all of the optional dependencies, some of which are included in the
+# below 'extras'. They can be opted into by apps.
+mlflow = { version = "*", optional = true }
+
+[tool.poetry.extras]
+mlflow = ["mlflow"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
@@ -52,7 +60,9 @@ reorder-python-imports = "^2.5.0"
 pre-commit-hooks = "^4.0.1"
 sphinx-rtd-theme = "^0.5.2"
 sphinx-click = "^3.0.1"
+nbsphinx = '*'
 Pygments = "^2.9.0"
+mlflow = '*'
 
 [tool.poetry.scripts]
 sparkmon = "sparkmon.__main__:main"

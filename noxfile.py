@@ -32,6 +32,8 @@ nox.options.sessions = (
     "docs-build",
 )
 
+extra_optional_packages = ["mlflow"]
+
 
 def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
     """Activate virtualenv in hooks installed by pre-commit.
@@ -119,7 +121,7 @@ def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or ["src", "tests", "docs/conf.py"]
     session.install(".")
-    session.install("mypy", "pytest")
+    session.install("mypy", "pytest", *extra_optional_packages)
     session.run("mypy", *args)
     if not session.posargs:
         session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
@@ -129,7 +131,7 @@ def mypy(session: Session) -> None:
 def tests(session: Session) -> None:
     """Run the test suite."""
     session.install(".")
-    session.install("coverage[toml]", "pytest", "pygments")
+    session.install("coverage[toml]", "pytest", "pygments", *extra_optional_packages)
     try:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
     finally:
@@ -154,7 +156,7 @@ def coverage(session: Session) -> None:
 def typeguard(session: Session) -> None:
     """Runtime type checking using Typeguard."""
     session.install(".")
-    session.install("pytest", "typeguard", "pygments")
+    session.install("pytest", "typeguard", "pygments", *extra_optional_packages)
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
 
 
@@ -172,7 +174,7 @@ def docs_build(session: Session) -> None:
     """Build the documentation."""
     args = session.posargs or ["docs", "docs/_build"]
     session.install(".")
-    session.install("sphinx", "sphinx-click", "sphinx-rtd-theme")
+    session.install("sphinx", "sphinx-click", "sphinx-rtd-theme", "nbsphinx")
 
     build_dir = Path("docs", "_build")
     if build_dir.exists():
@@ -186,7 +188,9 @@ def docs(session: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
     session.install(".")
-    session.install("sphinx", "sphinx-autobuild", "sphinx-click", "sphinx-rtd-theme")
+    session.install(
+        "sphinx", "sphinx-autobuild", "sphinx-click", "sphinx-rtd-theme", "nbsphinx"
+    )
 
     build_dir = Path("docs", "_build")
     if build_dir.exists():
