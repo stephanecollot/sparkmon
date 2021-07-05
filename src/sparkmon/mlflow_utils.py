@@ -3,8 +3,6 @@ import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 
-import mlflow
-
 
 @contextmanager
 def log_file(artifact_full_path: str):
@@ -12,6 +10,8 @@ def log_file(artifact_full_path: str):
 
     mlflow API is really missing this functionality, so let's implement it via a temporary directory.
     """
+    import mlflow
+
     artifact_full_path = Path(artifact_full_path)
 
     # The artifact_path argument of log_artifact() is actually the directory path
@@ -38,6 +38,8 @@ def log_file(artifact_full_path: str):
 
 def active_run():
     """Get the active run with all logs updated."""
+    import mlflow
+
     active_run = mlflow.active_run()
     # active_run.data.params # This is not updated
     return mlflow.get_run(active_run.info.run_id)
