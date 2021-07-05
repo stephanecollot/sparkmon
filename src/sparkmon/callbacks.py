@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from sparkmon import Application
-from sparkmon.mlflow import log_file
+from sparkmon.mlflow_utils import log_file
 
 
 def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
