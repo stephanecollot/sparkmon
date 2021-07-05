@@ -52,7 +52,7 @@ Requirements
 
 * Python
 * Spark
-* mlflow (optinal)
+* mlflow (optional)
 
 
 Installation
@@ -138,3 +138,4 @@ This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter
 .. github-only
 .. _Contributor Guide: CONTRIBUTING.rst
 .. _Usage: https://sparkmon.readthedocs.io/en/latest/usage.html
+.. _Example: https://sparkmon.readthedocs.io/en/latest/example.html
