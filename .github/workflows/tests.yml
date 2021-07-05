@@ -32,7 +32,7 @@ jobs:
       NOXSESSION: ${{ matrix.session }}
 
     steps:
-      - name: Install pandoc
+      - name: Install pandoc for nbsphinx
         if: matrix.session == 'docs-build'
         run: sudo apt-get install pandoc
 
