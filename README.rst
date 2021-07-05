@@ -41,9 +41,9 @@ Monitoring plot example:
 .. image:: docs/images/monitoring-plot-example.png
 
 * Logs the executors metrics
-* Create a monitoring thread directly in your PySpark application
-* Plot monitoring for a remote Spark application in a notebook, or in a file
-* Command line interface for a remote Spark application
+* Plot monitoring, display in a notebook, or export to a file
+* Can monitor remote Spark application
+* Can run directly in your PySpark application, or run in a notebook, or via the command-line interface
 
 
 Requirements
@@ -66,7 +66,36 @@ You can install *sparkmon* via pip_ from PyPI_:
 Usage
 -----
 
-Please see the `Command-line Reference <Usage_>`_ for details.
+.. code-block:: python
+  
+   import sparkmon
+   
+   # Create an app connection
+   # via a Spark session
+   application = sparkmon.create_application_from_spark(spark)
+   # or via a remote Spark web UI link
+   application = sparkmon.create_application_from_link(index=0, web_url='http://localhost:4040')
+
+   # Create and start the monitoring process
+   mon = sparkmon.SparkMon(
+       application, period=5, callbacks=[sparkmon.callback_plot_to_image]
+   )
+   mon.start()
+
+   # Stop monitoring
+   mon.stop()
+
+You can also use it from a notebook:
+
+There is also a command-line interface, see  `Command-line Reference <Usage_>`_ for details.
+
+
+How does it work?
+-----------------
+
+``SparkMon`` is running in the background a Python thread that is querying Spark web UI API and logging all the executors information over time.
+
+The ``callbacks`` list parameters allows you to define what do after each update, like exporting executors historical info to a csv, or plotting to a file, or to your notebook.
 
 
 Contributing
