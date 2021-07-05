@@ -1894,7 +1894,7 @@ mlflow = ["mlflow"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.1"
-content-hash = "a985730a306a89b8285eba6874bff46305c8ad15b5d335b5d338ff0f0852b599"
+content-hash = "875a6894b0d9c4c4fa949d151e795c1bc462a91bfa82924f767f1f2dc37dc0a1"
 
 [metadata.files]
 alabaster = [
