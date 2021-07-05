@@ -18,7 +18,7 @@ def test_plot_to_image() -> None:
     )
     mon.start()
 
-    time.sleep(13)
+    time.sleep(14)
     mon.stop()
     assert mon.cnt >= 2
 
@@ -33,7 +33,7 @@ def test_mlflow() -> None:
     )
     mon.start()
 
-    time.sleep(13)
+    time.sleep(14)
     mon.stop()
     assert mon.cnt >= 2
 
