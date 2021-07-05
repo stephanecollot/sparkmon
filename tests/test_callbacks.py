@@ -39,6 +39,6 @@ def test_mlflow() -> None:
 
     active_run = sparkmon.mlflow_utils.active_run()
     mlflow.end_run()
-    artifact_uri = Path(active_run.info.artifact_uri)
+    artifact_uri = Path(active_run.info.artifact_uri.replace("file://", ""))
     assert (artifact_uri / "sparkmon/plot.png").stat().st_size > 100
     assert (artifact_uri / "sparkmon/executors_db.csv").stat().st_size > 10
