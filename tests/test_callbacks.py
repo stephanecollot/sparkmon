@@ -1,11 +1,38 @@
 """Test cases for the callbacks."""
+import pathlib
 import time
-from pathlib import Path
+import urllib
 
 import mlflow
 
 import sparkmon
 from .utils import get_spark
+
+
+def file_uri_to_path(file_uri, path_class=pathlib.Path):
+    """This function returns a pathlib.PurePath object for the supplied file URI.
+
+    :param str file_uri: The file URI ...
+    :param class path_class: The type of path in the file_uri. By default it uses
+        the system specific path pathlib.PurePath, to force a specific type of path
+        pass pathlib.PureWindowsPath or pathlib.PurePosixPath
+    :returns: the pathlib.PurePath object
+    :rtype: pathlib.PurePath
+    """
+    windows_path = isinstance(path_class(), pathlib.PureWindowsPath)
+    file_uri_parsed = urllib.parse.urlparse(file_uri)
+    file_uri_path_unquoted = urllib.parse.unquote(file_uri_parsed.path)
+    if windows_path and file_uri_path_unquoted.startswith("/"):
+        result = path_class(file_uri_path_unquoted[1:])
+    else:
+        result = path_class(file_uri_path_unquoted)
+    if not result.is_absolute():
+        raise ValueError(
+            "Invalid file uri {} : resulting path {} not absolute".format(
+                file_uri, result
+            )
+        )
+    return result
 
 
 def test_plot_to_image() -> None:
@@ -39,6 +66,6 @@ def test_mlflow() -> None:
 
     active_run = sparkmon.mlflow_utils.active_run()
     mlflow.end_run()
-    artifact_uri = Path(active_run.info.artifact_uri.replace("file://", ""))
+    artifact_uri = file_uri_to_path(active_run.info.artifact_uri)
     assert (artifact_uri / "sparkmon/plot.png").stat().st_size > 100
     assert (artifact_uri / "sparkmon/executors_db.csv").stat().st_size > 10

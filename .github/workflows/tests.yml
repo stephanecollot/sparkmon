@@ -32,6 +32,10 @@ jobs:
       NOXSESSION: ${{ matrix.session }}
 
     steps:
+      - name: Install pandoc
+        if: matrix.session == 'docs-build'
+        run: sudo apt-get install pandoc
+
       - name: Check out the repository
         uses: actions/checkout@v2.3.4
 
