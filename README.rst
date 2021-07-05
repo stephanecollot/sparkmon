@@ -67,9 +67,9 @@ Usage
 -----
 
 .. code-block:: python
-  
+
    import sparkmon
-   
+
    # Create an app connection
    # via a Spark session
    application = sparkmon.create_application_from_spark(spark)
