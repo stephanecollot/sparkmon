@@ -35,8 +35,7 @@ sparkmon
 Description
 -----------
 
-``sparkmon`` is a Python package to monitor Spark applications. You can see it as an advanced Spark UI, that keep track all of `Spark REST API <SparkREST_>`_ metrics overtime.
-It is specifically useful to do memory profiling.
+``sparkmon`` is a Python package to monitor Spark applications. You can see it as an advanced Spark UI, that keep track all of `Spark REST API <SparkREST_>`_ metrics over time. It is specifically useful to do memory profiling.
 
 
 Features
@@ -46,7 +45,7 @@ Monitoring plot example:
 
 .. image:: docs/images/monitoring-plot-example.png
 
-* Logs the executors metrics
+* Log the executors metrics
 * Plot monitoring, display in a notebook, or export to a file
 * Can monitor remote Spark application
 * Can run directly in your PySpark application, or run in a notebook, or via the command-line interface
