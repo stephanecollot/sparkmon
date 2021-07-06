@@ -32,6 +32,12 @@ sparkmon
    :target: https://github.com/psf/black
    :alt: Black
 
+Description
+-----------
+
+``sparkmon`` is a Python package to monitor Spark applications. You can see it as an advanced Spark UI, that keep track all of `Spark REST API <SparkREST_>`_ metrics overtime.
+It is specifically useful to do memory profiling.
+
 
 Features
 --------
@@ -139,3 +145,4 @@ This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter
 .. _Contributor Guide: CONTRIBUTING.rst
 .. _Usage: https://sparkmon.readthedocs.io/en/latest/usage.html
 .. _Example: https://sparkmon.readthedocs.io/en/latest/example.html
+.. _SparkREST: https://spark.apache.org/docs/latest/monitoring.html#rest-api
