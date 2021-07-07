@@ -59,7 +59,7 @@ class SparkMon(threading.Thread):
             ###
             # Updating the application DB at the regular period:
             try:
-                self.application.log_executors_info()
+                self.application.log_all()
                 self.cnt += 1
             except urllib.error.URLError as ex:
                 if self.cnt > 1:

@@ -174,6 +174,12 @@ class Application:
         tasks_df = pd.DataFrame(tasks_list)
         return tasks_df
 
+    def log_all(self) -> None:
+        """Updating all information."""
+        self.log_executors_info()
+        self.log_stages()
+        self.log_tasks()
+
 
 def get_application_ids(web_url: str = WEB_URL) -> pd.DataFrame:
     """Retrieve available application id."""
