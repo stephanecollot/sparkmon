@@ -42,7 +42,14 @@ def log_executors_db_to_mlflow(application: Application, path: str = "sparkmon/e
         executors_db_df.to_csv(fp, index=False)
 
 
+def log_tasks_to_mlflow(application: Application, path: str = "sparkmon/tasks.csv") -> None:
+    """Log tasks to mlflow."""
+    with log_file(path) as fp:
+        application.get_tasks_df.to_csv(fp, index=False)
+
+
 def log_to_mlflow(application: Application) -> None:
     """Log executors_db to mlflow."""
     plot_to_mlflow(application)
     log_executors_db_to_mlflow(application)
+    log_tasks_to_mlflow(application)

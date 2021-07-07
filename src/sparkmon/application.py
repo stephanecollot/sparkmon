@@ -10,6 +10,7 @@ import urlpath
 from pyspark.sql import SparkSession
 
 import sparkmon
+from sparkmon.utils import flatten_dict
 from sparkmon.utils import get_memory
 
 API_APPLICATIONS_LINK = "api/v1/applications"
@@ -28,8 +29,9 @@ class Application:
         self.web_url = web_url
         self.application_id = application_id
 
-        self.executors_db: Dict[Any, Any] = {}
+        self.executors_db: Dict[Any, Any] = {}  # The key is timestamp
         self.stages_df: pd.DataFrame = pd.DataFrame()
+        self.tasks_db: Dict[str, Dict[Any, Any]] = {}  # The key is stageId.attemptId
 
     def get_executors_info(self) -> pd.DataFrame:
         """Retrieve executors info."""
@@ -126,11 +128,17 @@ class Application:
         url = urlpath.URL(self.web_url, API_APPLICATIONS_LINK, self.application_id, "stages")
         self.stages_df = pd.read_json(url)
 
-    def log_task_summary(self) -> pd.DataFrame:
-        """Retrieve stages."""
+    def log_tasks(self) -> None:
+        """Retrieve tasks."""
         for _, row in self.stages_df.iterrows():
-            print(row["stageId"])
-            if row["status"] == "SKIPPED":
+            stage_uid = f"{row['stageId']}.{row['attemptId']}"
+
+            # Initialize
+            if self.tasks_db.get(stage_uid) is None:
+                self.tasks_db[stage_uid] = {"tasks": None, "stage_last_status": None}
+
+            # Don't query again what is done
+            if self.tasks_db[stage_uid]["stage_last_status"] in ["completed", "skipped", "failed"]:
                 continue
 
             url = urlpath.URL(
@@ -140,13 +148,31 @@ class Application:
                 "stages",
                 str(row["stageId"]),
                 str(row["attemptId"]),
-                "taskSummary",
             )
-            print(url)
-            taskSummary_r = requests.get(url)
-            print(taskSummary_r)
-            taskSummary = taskSummary_r.json()
-            print(taskSummary)
+
+            stage_detail_r = requests.get(url)
+            stage_detail = stage_detail_r.json()
+
+            tasks = stage_detail["tasks"]
+
+            # Flatten the dictionnary
+            tasks = [flatten_dict(tasks[k]) for k in tasks.keys()]
+
+            self.tasks_db[stage_uid]["tasks"] = tasks
+            self.tasks_db[stage_uid]["stage_last_status"] = row["status"]
+
+    def get_tasks_df(self) -> pd.DataFrame:
+        """Return all tasks info into a DataFrame."""
+        tasks_list = []
+        # Iter stages
+        for k in self.tasks_db.keys():
+            tasks = self.tasks_db[k]["tasks"]
+            # Iter tasks
+            for t in tasks:
+                t["stage_uid"] = k
+                tasks_list.append(t)
+        tasks_df = pd.DataFrame(tasks_list)
+        return tasks_df
 
 
 def get_application_ids(web_url: str = WEB_URL) -> pd.DataFrame:
