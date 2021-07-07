@@ -22,6 +22,7 @@ class SparkMon(threading.Thread):
         """Constructor, initializes base class Thread."""
         threading.Thread.__init__(self)
         self._stop = threading.Event()
+        self.daemon = True
         self.cnt = 0
         self.application = application
         self.period = period
