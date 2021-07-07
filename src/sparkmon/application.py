@@ -138,7 +138,7 @@ class Application:
                 self.tasks_db[stage_uid] = {"tasks": None, "stage_last_status": None}
 
             # Don't query again what is done
-            if self.tasks_db[stage_uid]["stage_last_status"] in ["completed", "skipped", "failed"]:
+            if self.tasks_db[stage_uid]["stage_last_status"] in ["COMPLETE", "SKIPPED", "FAILED"]:
                 continue
 
             url = urlpath.URL(
