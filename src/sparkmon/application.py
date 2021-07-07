@@ -5,6 +5,7 @@ from typing import Dict
 
 import pandas as pd
 import psutil
+import requests
 import urlpath
 from pyspark.sql import SparkSession
 
@@ -18,12 +19,17 @@ WEB_URL = "http://localhost:4040"
 class Application:
     """This class is an helper to query Spark API and save historical."""
 
-    def __init__(self, web_url: str, application_id: str) -> None:
-        """An application is define by the Spark UI link and an application id."""
+    def __init__(self, application_id: str, web_url: str = WEB_URL) -> None:
+        """An application is define by the Spark UI link and an application id.
+
+        :param application_id: Spark applicationId
+        :param web_url: Spark REST API server
+        """
         self.web_url = web_url
         self.application_id = application_id
 
         self.executors_db: Dict[Any, Any] = {}
+        self.stages_df: pd.DataFrame = pd.DataFrame()
 
     def get_executors_info(self) -> pd.DataFrame:
         """Retrieve executors info."""
@@ -115,6 +121,33 @@ class Application:
 
         return d
 
+    def log_stages(self) -> None:
+        """Retrieve stages."""
+        url = urlpath.URL(self.web_url, API_APPLICATIONS_LINK, self.application_id, "stages")
+        self.stages_df = pd.read_json(url)
+
+    def log_task_summary(self) -> pd.DataFrame:
+        """Retrieve stages."""
+        for _, row in self.stages_df.iterrows():
+            print(row["stageId"])
+            if row["status"] == "SKIPPED":
+                continue
+
+            url = urlpath.URL(
+                self.web_url,
+                API_APPLICATIONS_LINK,
+                self.application_id,
+                "stages",
+                str(row["stageId"]),
+                str(row["attemptId"]),
+                "taskSummary",
+            )
+            print(url)
+            taskSummary_r = requests.get(url)
+            print(taskSummary_r)
+            taskSummary = taskSummary_r.json()
+            print(taskSummary)
+
 
 def get_application_ids(web_url: str = WEB_URL) -> pd.DataFrame:
     """Retrieve available application id."""
@@ -123,11 +156,15 @@ def get_application_ids(web_url: str = WEB_URL) -> pd.DataFrame:
 
 
 def create_application_from_link(index: int = 0, web_url: str = WEB_URL) -> Application:
-    """Create an Application."""
+    """Create an Application.
+
+    :param index: Application index in the application list
+    :param web_url: Spark REST API server
+    """
     applications_df = get_application_ids(web_url)
     application_id = applications_df["id"].iloc[index]
 
-    application = Application(web_url, application_id)
+    application = Application(application_id, web_url)
 
     return application
 
@@ -137,6 +174,6 @@ def create_application_from_spark(spark: SparkSession) -> Application:
     web_url = spark.sparkContext.uiWebUrl
     application_id = spark.sparkContext.applicationId
 
-    application = Application(web_url, application_id)
+    application = Application(application_id, web_url)
 
     return application
