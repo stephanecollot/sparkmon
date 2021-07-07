@@ -43,7 +43,7 @@ Features
 
 Monitoring plot example:
 
-.. image:: docs/images/monitoring-plot-example.png
+.. image:: docs/_static/monitoring-plot-example.png
 
 * Log the executors metrics
 * Plot monitoring, display in a notebook, or export to a file
