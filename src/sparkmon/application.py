@@ -44,9 +44,7 @@ class Application:
         now = pd.to_datetime(datetime.now())
         self.executors_db[now] = {
             "executors_df": executors_df,  # Storing full row data
-            "local_memory_pct": psutil.virtual_memory()[
-                2
-            ],  # Local machine memory usage
+            "local_memory_pct": psutil.virtual_memory()[2],  # Local machine memory usage
             "process_memory_usage": get_memory(),  # Python process memory usage in bytes
         }
         self.executors_db[now].update(self.parse_executors(executors_df))
@@ -68,35 +66,23 @@ class Application:
         More spefically we aggregate metrix from all executors into one.
         """
         memoryMetrics = executors_df["memoryMetrics"].dropna()
-        memoryMetrics_df = pd.DataFrame.from_records(
-            memoryMetrics, index=memoryMetrics.index
-        )
+        memoryMetrics_df = pd.DataFrame.from_records(memoryMetrics, index=memoryMetrics.index)
         executors_df = executors_df.join(memoryMetrics_df)
 
         if "peakMemoryMetrics" in executors_df.columns:
             peakMemoryMetrics = executors_df["peakMemoryMetrics"].dropna()
-            peakMemoryMetrics_df = pd.DataFrame.from_records(
-                peakMemoryMetrics, index=peakMemoryMetrics.index
-            )
+            peakMemoryMetrics_df = pd.DataFrame.from_records(peakMemoryMetrics, index=peakMemoryMetrics.index)
             executors_df = executors_df.join(peakMemoryMetrics_df)
 
         executors_df["usedOnHeapStorageMemoryPct"] = (
-            executors_df["usedOnHeapStorageMemory"]
-            / executors_df["totalOnHeapStorageMemory"]
-            * 100
+            executors_df["usedOnHeapStorageMemory"] / executors_df["totalOnHeapStorageMemory"] * 100
         )
         executors_df["usedOffHeapStorageMemoryPct"] = (
-            executors_df["usedOffHeapStorageMemory"]
-            / executors_df["totalOffHeapStorageMemory"]
-            * 100
+            executors_df["usedOffHeapStorageMemory"] / executors_df["totalOffHeapStorageMemory"] * 100
         )
-        executors_df["memoryUsedPct"] = (
-            executors_df["memoryUsed"] / executors_df["maxMemory"] * 100
-        )
+        executors_df["memoryUsedPct"] = executors_df["memoryUsed"] / executors_df["maxMemory"] * 100
 
-        def mmm(
-            d: Dict[str, Any], executors_df: pd.DataFrame, col: str
-        ) -> Dict[str, Any]:
+        def mmm(d: Dict[str, Any], executors_df: pd.DataFrame, col: str) -> Dict[str, Any]:
             if col not in executors_df.columns:
                 return d
             d[f"{col}_max"] = executors_df[col].max()
@@ -121,9 +107,7 @@ class Application:
         d["numActive"] = len(executors_df.query("isActive"))
         d["memoryUsed_sum"] = executors_df["memoryUsed"].sum()
         d["maxMemory_sum"] = executors_df["maxMemory"].sum()
-        d["memoryUsed_sum_pct"] = (
-            executors_df["memoryUsed"].sum() / executors_df["maxMemory"].sum() * 100
-        )
+        d["memoryUsed_sum_pct"] = executors_df["memoryUsed"].sum() / executors_df["maxMemory"].sum() * 100
         d["memoryUsedPct_driver"] = executors_df.iloc[0]["memoryUsedPct"]
 
         return d

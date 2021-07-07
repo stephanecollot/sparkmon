@@ -19,9 +19,7 @@ def plot_db(executors_db: Dict[Any, Any]) -> None:
     if len(executors_db_df) == 0:
         return
 
-    def plot_max_value(
-        ax: matplotlib.axes.Axes, s: Any, string_rep: Callable = lambda x: f"{x:0.2f}"
-    ) -> None:
+    def plot_max_value(ax: matplotlib.axes.Axes, s: Any, string_rep: Callable = lambda x: f"{x:0.2f}") -> None:
         ax.annotate(
             string_rep(s.max()),
             xy=(1, s.max()),

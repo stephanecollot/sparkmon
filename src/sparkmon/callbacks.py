@@ -35,9 +35,7 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
     plt.switch_backend(old_backend)
 
 
-def log_executors_db_to_mlflow(
-    application: Application, path: str = "sparkmon/executors_db.csv"
-) -> None:
+def log_executors_db_to_mlflow(application: Application, path: str = "sparkmon/executors_db.csv") -> None:
     """Log executors_db to mlflow."""
     executors_db_df = pd.DataFrame(application.executors_db).T
     with log_file(path) as fp:
