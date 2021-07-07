@@ -27,11 +27,7 @@ def file_uri_to_path(file_uri, path_class=pathlib.Path):
     else:
         result = path_class(file_uri_path_unquoted)
     if not result.is_absolute():
-        raise ValueError(
-            "Invalid file uri {} : resulting path {} not absolute".format(
-                file_uri, result
-            )
-        )
+        raise ValueError("Invalid file uri {} : resulting path {} not absolute".format(file_uri, result))
     return result
 
 
@@ -40,9 +36,7 @@ def test_plot_to_image() -> None:
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
-    mon = sparkmon.SparkMon(
-        application, period=5, callbacks=[sparkmon.callbacks.plot_to_image]
-    )
+    mon = sparkmon.SparkMon(application, period=5, callbacks=[sparkmon.callbacks.plot_to_image])
     mon.start()
 
     time.sleep(14)
@@ -55,9 +49,7 @@ def test_mlflow() -> None:
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
-    mon = sparkmon.SparkMon(
-        application, period=5, callbacks=[sparkmon.callbacks.log_to_mlflow]
-    )
+    mon = sparkmon.SparkMon(application, period=5, callbacks=[sparkmon.callbacks.log_to_mlflow])
     mon.start()
 
     time.sleep(14)
