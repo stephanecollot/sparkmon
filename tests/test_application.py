@@ -2,6 +2,7 @@
 import time
 
 import sparkmon
+from .utils import get_random_df
 from .utils import get_spark
 
 
@@ -52,4 +53,28 @@ def test_exception() -> None:
     mon.start()
     spark.stop()
 
+    mon.stop()
+
+
+def test_stages_tasks() -> None:
+    """Test stages and metrics."""
+    spark = get_spark()
+    application = sparkmon.create_application_from_spark(spark)
+
+    mon = sparkmon.SparkMon(application, period=1, callbacks=[sparkmon.callbacks.log_to_mlflow])
+    mon.start()
+
+    # Some "long" jobs
+    df1 = spark.createDataFrame(get_random_df(10000)).repartition(10)
+    df2 = spark.createDataFrame(get_random_df(10000)).repartition(100)
+
+    df1 = df1.select(["A", "B", "C"])
+    df2 = df2.select(["A", "D"])
+
+    df = df1.join(df2, on="A")
+    df = df.groupby("A").mean()
+    df.toPandas()
+
+    assert len(mon.application.get_tasks_df()) > 10
+    assert len(mon.application.stages_df) > 2
     mon.stop()
