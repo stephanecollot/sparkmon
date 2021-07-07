@@ -65,6 +65,9 @@ class Application:
 
         More spefically we aggregate metrix from all executors into one.
         """
+        if len(executors_df) == 0:
+            return {}
+
         memoryMetrics = executors_df["memoryMetrics"].dropna()
         memoryMetrics_df = pd.DataFrame.from_records(memoryMetrics, index=memoryMetrics.index)
         executors_df = executors_df.join(memoryMetrics_df)
