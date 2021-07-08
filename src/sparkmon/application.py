@@ -1,4 +1,5 @@
 """Spark communication interface with its API, and managing historical API calls."""
+import warnings
 from datetime import datetime
 from typing import Any
 from typing import Dict
@@ -96,10 +97,14 @@ class Application:
         def mmm(d: Dict[str, Any], executors_df: pd.DataFrame, col: str) -> Dict[str, Any]:
             if col not in executors_df.columns:
                 return d
-            d[f"{col}_max"] = executors_df[col].max()
-            d[f"{col}_mean"] = executors_df[col].mean()
-            d[f"{col}_min"] = executors_df[col].min()
-            d[f"{col}_median"] = executors_df[col].median()
+
+            # Let's filter: "RuntimeWarning: Mean of empty slice"
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=RuntimeWarning)
+                d[f"{col}_max"] = executors_df[col].max()
+                d[f"{col}_mean"] = executors_df[col].mean()
+                d[f"{col}_min"] = executors_df[col].min()
+                d[f"{col}_median"] = executors_df[col].median()
 
             return d
 
