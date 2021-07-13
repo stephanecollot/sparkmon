@@ -120,9 +120,7 @@ class Application:
 
         # Convert to dict
         d: Dict[str, Any] = {
-            f"{key}_{agg}": value
-            for key, values in res.to_dict().items()
-            for agg, value in values.items()
+            f"{key}_{agg}": value for key, values in res.to_dict().items() for agg, value in values.items()
         }
 
         d["numActive"] = len(executors_df.query("isActive"))
