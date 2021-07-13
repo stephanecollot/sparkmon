@@ -1,4 +1,5 @@
 """Spark communication interface with its API, and managing historical API calls."""
+import warnings
 from datetime import datetime
 from typing import Any
 from typing import Dict
@@ -112,7 +113,10 @@ class Application:
         cols = [col for col in cols if col in executors_df.columns]
 
         # Obtain aggregated values
-        res = executors_df[cols].agg(["max", "mean", "median", "min"])
+        # Let's filter: "RuntimeWarning: Mean of empty slice"
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+            res = executors_df[cols].agg(["max", "mean", "median", "min"])
 
         # Convert to dict
         d: Dict[str, Any] = {
@@ -120,6 +124,7 @@ class Application:
             for key, values in res.to_dict().items()
             for agg, value in values.items()
         }
+
         d["numActive"] = len(executors_df.query("isActive"))
         d["memoryUsed_sum"] = executors_df["memoryUsed"].sum()
         d["maxMemory_sum"] = executors_df["maxMemory"].sum()
