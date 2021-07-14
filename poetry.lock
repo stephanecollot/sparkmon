@@ -791,7 +791,7 @@ python-versions = "*"
 
 [[package]]
 name = "mlflow"
-version = "1.18.0"
+version = "1.19.0"
 description = "MLflow: A Platform for ML Development and Productionization"
 category = "main"
 optional = false
@@ -2395,8 +2395,8 @@ mistune = [
     {file = "mistune-0.8.4.tar.gz", hash = "sha256:59a3429db53c50b5c6bcc8a07f8848cb00d7dc8bdb431a4ab41920d201d4756e"},
 ]
 mlflow = [
-    {file = "mlflow-1.18.0-py3-none-any.whl", hash = "sha256:d99c9ec5a70993aeccc79c3368bd8460f954caf3397b8be770b4cfa6e7a2a429"},
-    {file = "mlflow-1.18.0.tar.gz", hash = "sha256:8942089589d08c05c8a7fc66828c02a9233be462c421881b50bc2a0b183dfdbe"},
+    {file = "mlflow-1.19.0-py3-none-any.whl", hash = "sha256:95ac0899ead161298a7319e1c08a7706af8c5ea0e80708be7c903ee14016c53f"},
+    {file = "mlflow-1.19.0.tar.gz", hash = "sha256:17da5648f67985f2f9417de91dce96e31028afc2a09a1b39b20d7a5f192ef853"},
 ]
 mypy = [
     {file = "mypy-0.902-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:3f12705eabdd274b98f676e3e5a89f247ea86dc1af48a2d5a2b080abac4e1243"},
