@@ -94,32 +94,35 @@ class Application:
         )
         executors_df["memoryUsedPct"] = executors_df["memoryUsed"] / executors_df["maxMemory"] * 100
 
-        def mmm(d: Dict[str, Any], executors_df: pd.DataFrame, col: str) -> Dict[str, Any]:
-            if col not in executors_df.columns:
-                return d
+        # Columns to aggregate
+        cols = [
+            "memoryUsedPct",
+            "usedOnHeapStorageMemoryPct",
+            "usedOffHeapStorageMemoryPct",
+            "totalOnHeapStorageMemory",
+            "totalOffHeapStorageMemory",
+            "ProcessTreePythonVMemory",
+            "ProcessTreePythonRSSMemory",
+            "JVMHeapMemory",
+            "JVMOffHeapMemory",
+            "OffHeapExecutionMemory",
+            "OnHeapExecutionMemory",
+        ]
 
-            # Let's filter: "RuntimeWarning: Mean of empty slice"
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore", category=RuntimeWarning)
-                d[f"{col}_max"] = executors_df[col].max()
-                d[f"{col}_mean"] = executors_df[col].mean()
-                d[f"{col}_min"] = executors_df[col].min()
-                d[f"{col}_median"] = executors_df[col].median()
+        # Filter columns that are not on the DataFrame
+        cols = [col for col in cols if col in executors_df.columns]
 
-            return d
+        # Obtain aggregated values
+        # Let's filter: "RuntimeWarning: Mean of empty slice"
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+            res = executors_df[cols].agg(["max", "mean", "median", "min"])
 
-        d: Dict[str, Any] = {}
-        d = mmm(d, executors_df, "memoryUsedPct")
-        d = mmm(d, executors_df, "usedOnHeapStorageMemoryPct")
-        d = mmm(d, executors_df, "usedOffHeapStorageMemoryPct")
-        d = mmm(d, executors_df, "totalOnHeapStorageMemory")
-        d = mmm(d, executors_df, "totalOffHeapStorageMemory")
-        d = mmm(d, executors_df, "ProcessTreePythonVMemory")
-        d = mmm(d, executors_df, "ProcessTreePythonRSSMemory")
-        d = mmm(d, executors_df, "JVMHeapMemory")
-        d = mmm(d, executors_df, "JVMOffHeapMemory")
-        d = mmm(d, executors_df, "OffHeapExecutionMemory")
-        d = mmm(d, executors_df, "OnHeapExecutionMemory")
+        # Convert to dict
+        d: Dict[str, Any] = {
+            f"{key}_{agg}": value for key, values in res.to_dict().items() for agg, value in values.items()
+        }
+
         d["numActive"] = len(executors_df.query("isActive"))
         d["memoryUsed_sum"] = executors_df["memoryUsed"].sum()
         d["maxMemory_sum"] = executors_df["maxMemory"].sum()
