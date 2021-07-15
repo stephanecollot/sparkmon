@@ -66,7 +66,7 @@ class Application:
 
     def plot(self) -> None:
         """Plotting."""
-        sparkmon.plot_db(self.executors_db)
+        sparkmon.plot_executors(self.executors_db, title=self.application_id)
 
     @staticmethod
     def parse_executors(executors_df: pd.DataFrame) -> Dict[Any, Any]:
