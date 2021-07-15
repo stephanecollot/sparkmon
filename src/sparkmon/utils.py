@@ -9,7 +9,9 @@ import psutil
 
 def convert_size(size_bytes) -> str:
     """Convert bytes in human readble string."""
-    if size_bytes <= 0:
+    if size_bytes == 0:
+        return "0"
+    elif size_bytes < 0:
         sign = -1
         size_bytes = size_bytes * -1
     else:
