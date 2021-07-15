@@ -100,3 +100,12 @@ class SparkMon(threading.Thread):
 
             self.updateEvent.clear()
             self.updateEvent.wait()
+
+    def __enter__(self):
+        """Start thread in contextmanager."""
+        self.start()
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        """Stop thread in contextmanager."""
+        self.stop()
