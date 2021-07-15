@@ -50,15 +50,17 @@ def mmm_plot(
     plot_max_value(ax, executors_db_df[f"{value}_max"], convert_size)
 
 
-def plot_db(executors_db: Dict[Any, Any]) -> None:
+def plot_executors(executors_db: Dict[Any, Any], title: str = None) -> None:
     """Plot executors DB."""
     executors_db_df = pd.DataFrame(executors_db).T
 
     if len(executors_db_df) == 0:
         return
 
-    fig = plt.figure(constrained_layout=False, figsize=(28, 16))
+    fig = plt.figure(constrained_layout=False, figsize=(28, 16), tight_layout={"pad": 0})
     gs = fig.add_gridspec(9, 2)
+    if title is not None:
+        fig.suptitle(title, y=1)
 
     ax = fig.add_subplot(gs[0, 0])
     ax.set_title("1. Num active executors:")
