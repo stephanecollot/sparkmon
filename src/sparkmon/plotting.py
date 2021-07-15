@@ -71,14 +71,14 @@ def plot_executors(executors_db: Dict[Any, Any], title: str = None) -> None:
         fig.suptitle(title, y=1)
 
     ax = fig.add_subplot(gs[0, 0])
-    prepare_axis()
+    prepare_axis(ax)
     ax.set_title("1. Num active executors:")
     executors_db_df["numActive"].plot(ax=ax)
     ax.set_xticklabels([])
     ax.set_ylim(bottom=0)
 
     ax = fig.add_subplot(gs[0, 1])
-    prepare_axis()
+    prepare_axis(ax)
     ax.set_title("2. Total memory used percentage:")
     executors_db_df["memoryUsed_sum_pct"].plot(ax=ax, ylim=(0, 100))
     plot_max_value(ax, executors_db_df["memoryUsed_sum_pct"])
@@ -88,24 +88,24 @@ def plot_executors(executors_db: Dict[Any, Any], title: str = None) -> None:
     ax.set_xticklabels([])
 
     ax = fig.add_subplot(gs[1:3, 0])
-    prepare_axis()
+    prepare_axis(ax)
     # mmm_plot(ax, 'memoryUsedPct', executors_db_df, '3. ', pct=True, ylim=(0,100))
     mmm_plot(ax, "OnHeapExecutionMemory", executors_db_df, "3. Peak ")
     ax.set_xticklabels([])
 
     ax = fig.add_subplot(gs[1:3, 1])
-    prepare_axis()
+    prepare_axis(ax)
     mmm_plot(ax, "OffHeapExecutionMemory", executors_db_df, "4. Peak ")
     ax.set_xticklabels([])
 
     ax = fig.add_subplot(gs[3:5, 0])
-    prepare_axis()
+    prepare_axis(ax)
     mmm_plot(ax, "totalOnHeapStorageMemory", executors_db_df, "5. ")
     # mmm_plot(ax, 'usedOnHeapStorageMemory', executors_db_df, '5. ')  # 0
     ax.set_xticklabels([])
 
     ax = fig.add_subplot(gs[3:5, 1])
-    prepare_axis()
+    prepare_axis(ax)
     ax.set_title("6. Driver memory percentage:")
     executors_db_df["memoryUsedPct_driver"].plot(label="driver", ax=ax)
     plot_max_value(ax, executors_db_df["memoryUsedPct_driver"])
@@ -113,21 +113,21 @@ def plot_executors(executors_db: Dict[Any, Any], title: str = None) -> None:
     ax.set_xticklabels([])
 
     ax = fig.add_subplot(gs[5:7, 0])
-    prepare_axis()
+    prepare_axis(ax)
     mmm_plot(ax, "ProcessTreePythonRSSMemory", executors_db_df, "7. Peak ")
     ax.set_xticklabels([])
 
     ax = fig.add_subplot(gs[5:7, 1])
-    prepare_axis()
+    prepare_axis(ax)
     mmm_plot(ax, "ProcessTreePythonVMemory", executors_db_df, "8. Peak ")
     ax.set_xticklabels([])
 
     ax = fig.add_subplot(gs[7:9, 0])
-    prepare_axis()
+    prepare_axis(ax)
     mmm_plot(ax, "JVMHeapMemory", executors_db_df, "9. Peak ")
 
     ax = fig.add_subplot(gs[7:9, 1])
-    prepare_axis()
+    prepare_axis(ax)
     mmm_plot(ax, "JVMOffHeapMemory", executors_db_df, "10. Peak ")
 
 
