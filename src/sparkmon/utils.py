@@ -10,11 +10,14 @@ import psutil
 def convert_size(size_bytes) -> str:
     """Convert bytes in human readble string."""
     if size_bytes <= 0:
-        return f"{size_bytes:.2f}B"
+        sign = -1
+        size_bytes = size_bytes * -1
+    else:
+        sign = 1
     size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
     i = int(math.floor(math.log(size_bytes, 1024)))
     p = math.pow(1024, i)
-    s = round(size_bytes / p, 2)
+    s = round(size_bytes / p, 2) * sign
     return "%s %s" % (s, size_name[i])
 
 
