@@ -14,7 +14,7 @@ sparkmon
    :target: https://pypi.org/project/sparkmon
    :alt: Python Version
 .. |License| image:: https://img.shields.io/pypi/l/sparkmon
-   :target: https://opensource.org/licenses/Apache-2.0
+   :target: https://opensource.org/licenses/MIT
    :alt: License
 .. |Read the Docs| image:: https://img.shields.io/readthedocs/sparkmon/latest.svg?label=Read%20the%20Docs
    :target: https://sparkmon.readthedocs.io/
@@ -117,7 +117,7 @@ To learn more, see the `Contributor Guide`_.
 License
 -------
 
-Distributed under the terms of the `Apache 2.0 license`_,
+Distributed under the terms of the `MIT license`_,
 *sparkmon* is free and open source software.
 
 
@@ -135,7 +135,7 @@ This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter
 
 .. _@cjolowicz: https://github.com/cjolowicz
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _Apache 2.0 license: https://opensource.org/licenses/Apache-2.0
+.. _MIT license: https://opensource.org/licenses/MIT
 .. _PyPI: https://pypi.org/
 .. _Hypermodern Python Cookiecutter: https://github.com/cjolowicz/cookiecutter-hypermodern-python
 .. _file an issue: https://github.com/stephanecollot/sparkmon/issues
