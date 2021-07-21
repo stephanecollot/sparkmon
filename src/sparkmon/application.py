@@ -39,16 +39,19 @@ WEB_URL = "http://localhost:4040"
 class Application:
     """This class is an helper to query Spark API and save historical."""
 
-    def __init__(self, application_id: str, web_url: str = WEB_URL) -> None:
+    def __init__(self, application_id: str, web_url: str = WEB_URL, debug: bool = False) -> None:
         """An application is define by the Spark UI link and an application id.
 
         :param application_id: Spark applicationId
         :param web_url: Spark REST API server
+        :param debug: debug mode for development purposes, it store the row data
         """
         self.web_url = web_url
         self.application_id = application_id
+        self.debug = debug
 
         self.executors_db: Dict[Any, Any] = {}  # The key is timestamp
+        self.timeseries_db: Dict[Any, Any] = {}  # The key is timestamp
         self.stages_df: pd.DataFrame = pd.DataFrame()
         self.tasks_db: Dict[str, Dict[Any, Any]] = {}  # The key is stageId.attemptId
 
@@ -69,22 +72,23 @@ class Application:
         executors_df = self.get_executors_info()
 
         now = pd.to_datetime(datetime.now())
-        self.executors_db[now] = {
-            "executors_df": executors_df,  # Storing full row data
-            "local_memory_pct": psutil.virtual_memory()[2],  # Local machine memory usage
-            "process_memory_usage": get_memory(),  # Python process memory usage in bytes
-        }
-        self.executors_db[now].update(self.parse_executors(executors_df))
+        if self.debug:
+            self.executors_db[now] = executors_df  # Storing full row data
+
+        self.timeseries_db[now] = self.parse_executors(executors_df)
+        self.timeseries_db[now]["local_memory_pct"] = psutil.virtual_memory()[2]  # Local machine memory usage
+        self.timeseries_db[now]["process_memory_usage"] = get_memory()  # Local machine memory usage
 
     def parse_db(self) -> None:
         """Re-parse the full executors_db, usefull if you change the parsing function, for development."""
-        for t, v in self.executors_db.items():
-            executors_df = v["executors_df"]
-            self.executors_db[t].update(self.parse_executors(executors_df))
+        if not self.debug:
+            print("sparkmon: Warning, parse_db should be used with debug=True")
+        for t, executors_df in self.executors_db.items():
+            self.timeseries_db[t].update(self.parse_executors(executors_df))
 
     def plot(self) -> None:
         """Plotting."""
-        sparkmon.plot_executors(self.executors_db, title=self.application_id)
+        sparkmon.plot_timeseries(self.timeseries_db, title=self.application_id)
 
     @staticmethod
     def parse_executors(executors_df: pd.DataFrame) -> Dict[Any, Any]:
