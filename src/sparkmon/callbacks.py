@@ -53,11 +53,11 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
     plt.switch_backend(old_backend)
 
 
-def log_executors_db_to_mlflow(application: Application, path: str = "sparkmon/executors_db.csv") -> None:
-    """Log executors_db to mlflow."""
-    executors_db_df = pd.DataFrame(application.executors_db).T
+def log_timeseries_db_to_mlflow(application: Application, path: str = "sparkmon/timeseries.csv") -> None:
+    """Log timeseries_db to mlflow."""
+    timeseries_db_df = pd.DataFrame(application.timeseries_db).T
     with log_file(path) as fp:
-        executors_db_df.to_csv(fp, index=False)
+        timeseries_db_df.to_csv(fp, index=False)
 
 
 def log_tasks_to_mlflow(application: Application, path: str = "sparkmon/tasks.csv") -> None:
@@ -73,8 +73,8 @@ def log_stages_to_mlflow(application: Application, path: str = "sparkmon/stages.
 
 
 def log_to_mlflow(application: Application) -> None:
-    """Log executors_db to mlflow."""
+    """Log to mlflow."""
     plot_to_mlflow(application)
-    log_executors_db_to_mlflow(application)
+    log_timeseries_db_to_mlflow(application)
     log_tasks_to_mlflow(application)
     log_stages_to_mlflow(application)

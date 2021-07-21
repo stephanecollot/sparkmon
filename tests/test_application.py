@@ -47,6 +47,7 @@ def test_application_other() -> None:
     """Test parse_db."""
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
+    application.debug = True
 
     mon = sparkmon.SparkMon(application, period=1)
     mon.start()
