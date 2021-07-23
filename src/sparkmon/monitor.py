@@ -38,6 +38,9 @@ class SparkMon(threading.Thread):
     meaning that they need to terminate to let the application exit.
     Indeed, it is important to not run the callbacks in the daemon,
     so that a file export callback wouldn't be interupted in the middle of saving.
+
+    In case of problem, we could do another architecture: just one thread, this one,
+    with deamon=False, and using 'atexit' to safely end the monitoring and not blocking the app.
     """
 
     def __init__(
@@ -52,6 +55,7 @@ class SparkMon(threading.Thread):
         self.daemon = True
         self.cnt = 0
         self.application = application
+        self.application_lock = threading.Lock()
         self.period = period
         if callbacks is None:
             callbacks = []
@@ -77,8 +81,10 @@ class SparkMon(threading.Thread):
             ###
             # Updating the application DB at the regular period:
             try:
-                self.application.log_all()
-                self.cnt += 1
+                # Callbacks are reading application, so let's make thread safe with a lock:
+                with self.application_lock:
+                    self.application.log_all()
+                    self.cnt += 1
             except urllib.error.URLError as ex:
                 if self.cnt > 1:
                     print(f"sparkmon: Spark application not available anymore. Exception: {ex}")
@@ -89,6 +95,7 @@ class SparkMon(threading.Thread):
             # Callback can be run at a slower pace, specially if they are slow/expensive:
 
             # Check if callbacks are still running
+            # TODO: check if using .done() or add_done_callback() is not better then .running()?
             if self.callbacks_future is not None and not self.callbacks_future.running():
                 self.callbacks_future = None
 
@@ -102,7 +109,8 @@ class SparkMon(threading.Thread):
     def callbacks_run(self):
         """Running the callbacks."""
         for callback in self.callbacks:
-            callback(self.application)
+            with self.application_lock:
+                callback(self.application)
 
     def live_plot_notebook(self, n_iter=None) -> None:
         """Useful in the remote case only."""
