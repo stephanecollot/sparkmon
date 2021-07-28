@@ -148,9 +148,15 @@ def plot_timeseries(timeseries_db: Dict[Any, Any], title: str = None) -> None:
     prepare_axis(ax)
     mmm_plot(ax, "JVMOffHeapMemory", timeseries_db_df, "10. Peak ")
 
+    return fig
+
 
 def plot_notebook(application: sparkmon.Application) -> None:
     """Plot for notebook."""
     display.clear_output(True)
     application.plot()
     plt.show()
+
+    # To avoid memory leak
+    plt.clf()
+    plt.close()
