@@ -76,7 +76,7 @@ def prepare_axis(ax: matplotlib.axes.Axes) -> None:
     ax.margins(x=0)
 
 
-def plot_timeseries(timeseries_db: Dict[Any, Any], title: str = None) -> None:
+def plot_timeseries(timeseries_db: Dict[Any, Any], title: str = None) -> matplotlib.figure.Figure:
     """Plot timeseries DB."""
     timeseries_db_df = pd.DataFrame(timeseries_db).T
 
