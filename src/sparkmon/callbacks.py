@@ -28,29 +28,37 @@ from sparkmon.mlflow_utils import log_file
 
 
 def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
-    """Plot and save to image."""
+    """Plot and save to image.
+
+    Not compatible with live_plot_notebook().
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
     # To avoid the following error: "RuntimeError: main thread is not in main loop"
-    old_backend = matplotlib.get_backend()
-    plt.switch_backend("agg")
+    backend = "agg"
+    if matplotlib.get_backend() != backend:
+        print("set backend")
+        plt.switch_backend(backend)
 
     application.plot()
     plt.savefig(path)
-    plt.switch_backend(old_backend)
 
 
 def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") -> None:
-    """Log image to mlflow."""
+    """Log image to mlflow.
+
+    Not compatible with live_plot_notebook().
+    """
     # To avoid the following error: "RuntimeError: main thread is not in main loop"
-    old_backend = matplotlib.get_backend()
-    plt.switch_backend("agg")
+    backend = "agg"
+    if matplotlib.get_backend() != backend:
+        print("set backend")
+        plt.switch_backend(backend)
 
     application.plot()
     with log_file(path) as fp:
         plt.savefig(fp.name)
-    plt.switch_backend(old_backend)
 
 
 def log_timeseries_db_to_mlflow(application: Application, path: str = "sparkmon/timeseries.csv") -> None:

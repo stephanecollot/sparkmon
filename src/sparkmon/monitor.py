@@ -17,7 +17,6 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """Monitor thread."""
-import concurrent.futures
 import threading
 import time
 import urllib
@@ -34,13 +33,16 @@ class SparkMon(threading.Thread):
 
     This is a daemon thread, meaning that it is not blocking the exit of the application,
     and can be abruptly stopped at shutdown.
-    But it is running the callbacks into a ThreadPool that is blocking,
+    But it is running the callbacks into a different Thread that is blocking,
     meaning that they need to terminate to let the application exit.
     Indeed, it is important to not run the callbacks in the daemon,
     so that a file export callback wouldn't be interupted in the middle of saving.
 
     In case of problem, we could do another architecture: just one thread, this one,
     with deamon=False, and using 'atexit' to safely end the monitoring and not blocking the app.
+
+    Remark: The same 'application' should not be updated by something else, like other SparkMon instances,
+    because it could create race conditions.
     """
 
     def __init__(
@@ -61,8 +63,7 @@ class SparkMon(threading.Thread):
             callbacks = []
         self.callbacks = callbacks
         self.updateEvent = threading.Event()
-        self.callbacks_pool = concurrent.futures.ThreadPoolExecutor()
-        self.callbacks_future = None
+        self.callbacks_thread = None
 
     def stop(self) -> None:
         """To stop the thread."""
@@ -95,13 +96,13 @@ class SparkMon(threading.Thread):
             # Callback can be run at a slower pace, specially if they are slow/expensive:
 
             # Check if callbacks are still running
-            # TODO: check if using .done() or add_done_callback() is not better then .running()?
-            if self.callbacks_future is not None and not self.callbacks_future.running():
-                self.callbacks_future = None
+            if self.callbacks_thread is not None and not self.callbacks_thread.is_alive():
+                self.callbacks_thread = None
 
             # We only run the callbacks if they are not running
-            if self.callbacks_future is None:
-                self.callbacks_future = self.callbacks_pool.submit(self.callbacks_run)
+            if self.callbacks_thread is None:
+                self.callbacks_thread = threading.Thread(target=self.callbacks_run)
+                self.callbacks_thread.start()
 
             self.updateEvent.set()
             time.sleep(self.period)
@@ -113,7 +114,16 @@ class SparkMon(threading.Thread):
                 callback(self.application)
 
     def live_plot_notebook(self, n_iter=None) -> None:
-        """Useful in the remote case only."""
+        """Useful in the remote case only.
+
+        This is not compatible with callbacks that are using matplotlib, because matplotlib is not thread safe,
+        and you can get the following errors:
+        ```
+        python(81469,0x1106c5e00) malloc: Incorrect checksum for freed object 0x7fe18da140a8: probably modified after being freed.
+        Corrupt value: 0x230017000b00f005
+        python(81469,0x1106c5e00) malloc: *** set a breakpoint in malloc_error_break to debug
+        ```
+        """
         cnt = 0
         while True:
             cnt += 1
@@ -122,8 +132,8 @@ class SparkMon(threading.Thread):
             if self.stopped():
                 return
 
-            sparkmon.plot_notebook(self.application)
-
+            with self.application_lock:
+                sparkmon.plot_notebook(self.application)
             self.updateEvent.clear()
             self.updateEvent.wait()
 
