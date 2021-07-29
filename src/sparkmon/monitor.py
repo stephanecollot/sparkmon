@@ -17,6 +17,7 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """Monitor thread."""
+import atexit
 import threading
 import time
 import urllib
@@ -54,7 +55,6 @@ class SparkMon(threading.Thread):
         """Constructor, initializes base class Thread."""
         threading.Thread.__init__(self)
         self._stop = threading.Event()
-        self.daemon = True
         self.cnt = 0
         self.application = application
         self.application_lock = threading.Lock()
@@ -63,7 +63,6 @@ class SparkMon(threading.Thread):
             callbacks = []
         self.callbacks = callbacks
         self.updateEvent = threading.Event()
-        self.callbacks_thread = None
 
     def stop(self) -> None:
         """To stop the thread."""
@@ -75,6 +74,7 @@ class SparkMon(threading.Thread):
 
     def run(self) -> None:
         """Overrides Thread method."""
+        atexit.register(self.stop)
         while True:
             if self.stopped():
                 return
@@ -94,15 +94,7 @@ class SparkMon(threading.Thread):
 
             ###
             # Callback can be run at a slower pace, specially if they are slow/expensive:
-
-            # Check if callbacks are still running
-            if self.callbacks_thread is not None and not self.callbacks_thread.is_alive():
-                self.callbacks_thread = None
-
-            # We only run the callbacks if they are not running
-            if self.callbacks_thread is None:
-                self.callbacks_thread = threading.Thread(target=self.callbacks_run)
-                self.callbacks_thread.start()
+            self.callbacks_run()
 
             self.updateEvent.set()
             time.sleep(self.period)
