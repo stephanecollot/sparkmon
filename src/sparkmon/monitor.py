@@ -63,6 +63,7 @@ class SparkMon(threading.Thread):
             callbacks = []
         self.callbacks = callbacks
         self.updateEvent = threading.Event()
+        self.last_update = False
 
     def stop(self) -> None:
         """To stop the thread."""
@@ -74,7 +75,7 @@ class SparkMon(threading.Thread):
 
     def run(self) -> None:
         """Overrides Thread method."""
-        atexit.register(self.stop)
+        atexit.register(self.stop_next)
         while True:
             if self.stopped():
                 return
@@ -95,6 +96,11 @@ class SparkMon(threading.Thread):
             ###
             # Callback can be run at a slower pace, specially if they are slow/expensive:
             self.callbacks_run()
+
+            # In order not to stop the thread in the middle of a callback:
+            if self.last_update:
+                self.stop()
+                return
 
             self.updateEvent.set()
             time.sleep(self.period)
@@ -136,4 +142,8 @@ class SparkMon(threading.Thread):
 
     def __exit__(self, *args, **kwargs):
         """Stop thread in contextmanager."""
-        self.stop()
+        self.stop_next()
+
+    def stop_next(self):
+        """Don't continue to run the loop, and exit safely the thread."""
+        self.last_update = True
