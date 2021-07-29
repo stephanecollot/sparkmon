@@ -36,7 +36,7 @@ def test_plot_to_image() -> None:
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
-    mon = sparkmon.SparkMon(application, period=5, callbacks=[sparkmon.callbacks.plot_to_image])
+    mon = sparkmon.SparkMon(application, period=3, callbacks=[sparkmon.callbacks.plot_to_image])
     mon.start()
 
     time.sleep(14)
@@ -49,7 +49,7 @@ def test_mlflow() -> None:
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
-    mon = sparkmon.SparkMon(application, period=5, callbacks=[sparkmon.callbacks.log_to_mlflow])
+    mon = sparkmon.SparkMon(application, period=3, callbacks=[sparkmon.callbacks.log_to_mlflow])
     mon.start()
 
     time.sleep(14)
