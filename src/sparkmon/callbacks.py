@@ -21,7 +21,6 @@ from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt
-import pandas as pd
 
 from sparkmon import Application
 from sparkmon.mlflow_utils import log_file
@@ -71,7 +70,7 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
 
 def log_timeseries_db_to_mlflow(application: Application, path: str = "sparkmon/timeseries.csv") -> None:
     """Log timeseries_db to mlflow."""
-    timeseries_db_df = pd.DataFrame(application.timeseries_db).T
+    timeseries_db_df = application.get_timeseries_db_df()
     with log_file(path) as fp:
         timeseries_db_df.to_csv(fp, index=False)
 

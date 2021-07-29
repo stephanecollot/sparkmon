@@ -30,7 +30,8 @@ from pyspark.sql import SparkSession
 
 import sparkmon
 from sparkmon.utils import flatten_dict
-from sparkmon.utils import get_memory
+from sparkmon.utils import get_memory_process
+from sparkmon.utils import get_memory_user
 
 API_APPLICATIONS_LINK = "api/v1/applications"
 WEB_URL = "http://localhost:4040"
@@ -76,8 +77,10 @@ class Application:
             self.executors_db[now] = executors_df  # Storing full row data
 
         self.timeseries_db[now] = self.parse_executors(executors_df)
+        # Remark: local_memory_pct is a percentage, doesn't really work if you are running an kube
         self.timeseries_db[now]["local_memory_pct"] = psutil.virtual_memory()[2]  # Local machine memory usage
-        self.timeseries_db[now]["process_memory_usage"] = get_memory()  # Local machine memory usage
+        self.timeseries_db[now]["process_memory_usage"] = get_memory_process()  # Local machine memory usage
+        self.timeseries_db[now]["user_memory_usage"] = get_memory_user()  # Local machine memory usage
 
     def parse_db(self) -> None:
         """Re-parse the full executors_db, usefull if you change the parsing function, for development."""
@@ -88,7 +91,7 @@ class Application:
 
     def plot(self) -> None:
         """Plotting."""
-        sparkmon.plot_timeseries(self.timeseries_db, title=self.application_id)
+        sparkmon.plot_timeseries(self.get_timeseries_db_df(), title=self.application_id)
 
     @staticmethod
     def parse_executors(executors_df: pd.DataFrame) -> Dict[Any, Any]:
@@ -203,6 +206,11 @@ class Application:
                 tasks_list.append(t)
         tasks_df = pd.DataFrame(tasks_list)
         return tasks_df
+
+    def get_timeseries_db_df(self) -> pd.DataFrame:
+        """Return timeseries_db info into a DataFrame."""
+        timeseries_db_df = pd.DataFrame(self.timeseries_db).T
+        return timeseries_db_df
 
     def log_all(self) -> None:
         """Updating all information."""
