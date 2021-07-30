@@ -134,13 +134,20 @@ This will allow a chance to talk it over with the owners and validate your appro
 How release a new version
 -------------------------
 
-Make a new branch, then:
+Make a new branch only to make the release, then:
 
 .. code:: console
 
+   $ git checkout master
+   $ git pull
+   $ # Where <version> = X.X.X
+   $ git checkout -b release_<version>
    $ poetry version <version>
    $ git add pyproject.toml
    $ git commit -m "<project> <version>"
    $ git push
 
-Then make a pull request.
+Then make a pull request, and merge it to master.
+Then make a release note in Github.
+
+https://cookiecutter-hypermodern-python.readthedocs.io/en/2021.7.15/guide.html#how-to-make-a-release
