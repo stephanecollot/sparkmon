@@ -97,7 +97,7 @@ class SparkMon(threading.Thread):
                     # Not need to print if we exited or stopped
                     if not self.stopped_smooth():
                         print(
-                            f"sparkmon: Info, Spark application not available anymore, stopping monitoring. Exception: {ex}"
+                            f"sparkmon: Info, Spark application not available anymore, stopping monitoring. (Exception: {ex})"
                         )
                     return
 
