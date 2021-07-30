@@ -21,41 +21,56 @@ from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt
-import pandas as pd
 
 from sparkmon import Application
 from sparkmon.mlflow_utils import log_file
 
 
 def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
-    """Plot and save to image."""
+    """Plot and save to image.
+
+    Not compatible with live_plot_notebook().
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
     # To avoid the following error: "RuntimeError: main thread is not in main loop"
-    old_backend = matplotlib.get_backend()
-    plt.switch_backend("agg")
+    backend = "agg"
+    if matplotlib.get_backend() != backend:
+        print("set backend")
+        plt.switch_backend(backend)
 
     application.plot()
     plt.savefig(path)
-    plt.switch_backend(old_backend)
+
+    # To avoid memory leak
+    plt.clf()
+    plt.close()
 
 
 def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") -> None:
-    """Log image to mlflow."""
+    """Log image to mlflow.
+
+    Not compatible with live_plot_notebook().
+    """
     # To avoid the following error: "RuntimeError: main thread is not in main loop"
-    old_backend = matplotlib.get_backend()
-    plt.switch_backend("agg")
+    backend = "agg"
+    if matplotlib.get_backend() != backend:
+        print("set backend")
+        plt.switch_backend(backend)
 
     application.plot()
     with log_file(path) as fp:
         plt.savefig(fp.name)
-    plt.switch_backend(old_backend)
+
+    # To avoid memory leak
+    plt.clf()
+    plt.close()
 
 
 def log_timeseries_db_to_mlflow(application: Application, path: str = "sparkmon/timeseries.csv") -> None:
     """Log timeseries_db to mlflow."""
-    timeseries_db_df = pd.DataFrame(application.timeseries_db).T
+    timeseries_db_df = application.get_timeseries_db_df()
     with log_file(path) as fp:
         timeseries_db_df.to_csv(fp, index=False)
 

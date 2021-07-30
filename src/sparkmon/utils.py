@@ -18,6 +18,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """Utilities functions."""
 import collections
+import getpass
 import math
 import os
 from typing import Any
@@ -44,10 +45,28 @@ def convert_size(size_bytes) -> str:
     return "%s %s" % (s, size_name[i])
 
 
-def get_memory() -> Any:
-    """Get current memory usage in bytes."""
+def get_memory_process() -> Any:
+    """Get memory usage in bytes of this process running Python."""
     process = psutil.Process(os.getpid())
     return process.memory_info().rss  # in bytes
+
+
+def get_memory_user() -> Any:
+    """Get memory usage in bytes of all process of the current user."""
+    user = getpass.getuser()
+    # print(user)
+
+    total = 0
+    for p in psutil.process_iter():
+        try:
+            if p.username() == user:
+                total += p.memory_info().rss
+        except psutil.AccessDenied:
+            # For some process we might permission issue, with the following error
+            # psutil AccessDenied: psutil.AccessDenied (pid=599, name='PanGPS')
+            pass
+
+    return total
 
 
 def flatten_dict(d, parent_key="", sep="_"):

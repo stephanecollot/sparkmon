@@ -19,7 +19,6 @@
 """Plotting utilities."""
 from typing import Any
 from typing import Callable
-from typing import Dict
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -41,6 +40,15 @@ def plot_max_value(ax: matplotlib.axes.Axes, s: Any, string_rep: Callable = lamb
     )
 
 
+def ax_convert_size(ax: matplotlib.axes.Axes):
+    """Convert byte size for displaying tick values."""
+    ticks = [convert_size(x) for x in ax.get_yticks()]
+    ax.set_yticks(
+        ax.get_yticks()
+    )  # Necessary to remove UserWarning: FixedFormatter should only be used together with FixedLocator
+    ax.set_yticklabels(ticks)
+
+
 def mmm_plot(
     ax: matplotlib.axes.Axes,
     value: str,
@@ -59,11 +67,7 @@ def mmm_plot(
     timeseries_db_df[f"{value}_mean"].plot(label="mean", ax=ax, ylim=ylim)
     timeseries_db_df[f"{value}_min"].plot(label="min", ax=ax, ylim=ylim)
     if not pct:
-        ticks = [convert_size(x) for x in ax.get_yticks()]
-        ax.set_yticks(
-            ax.get_yticks()
-        )  # Necessary to remove UserWarning: FixedFormatter should only be used together with FixedLocator
-        ax.set_yticklabels(ticks)
+        ax_convert_size(ax)
     ax.legend()
     plot_max_value(ax, timeseries_db_df[f"{value}_max"], convert_size)
 
@@ -76,10 +80,8 @@ def prepare_axis(ax: matplotlib.axes.Axes) -> None:
     ax.margins(x=0)
 
 
-def plot_timeseries(timeseries_db: Dict[Any, Any], title: str = None) -> None:
+def plot_timeseries(timeseries_db_df: pd.DataFrame, title: str = None) -> matplotlib.figure.Figure:
     """Plot timeseries DB."""
-    timeseries_db_df = pd.DataFrame(timeseries_db).T
-
     if len(timeseries_db_df) == 0:
         return
 
@@ -113,7 +115,14 @@ def plot_timeseries(timeseries_db: Dict[Any, Any], title: str = None) -> None:
 
     ax = fig.add_subplot(gs[1:3, 1])
     prepare_axis(ax)
-    mmm_plot(ax, "OffHeapExecutionMemory", timeseries_db_df, "4. Peak ")
+    # mmm_plot(ax, "OffHeapExecutionMemory", timeseries_db_df, "4. Peak ")  # off heap is disable by default in Spark
+    ax.set_title("4. Local memory usage:")
+    timeseries_db_df["process_memory_usage"].plot(ax=ax)  # We should put only 1 ylim, the last one
+    plot_max_value(ax, timeseries_db_df["process_memory_usage"], convert_size)
+    timeseries_db_df["user_memory_usage"].plot(ax=ax, ylim=(0, None))
+    plot_max_value(ax, timeseries_db_df["user_memory_usage"], convert_size)
+    ax_convert_size(ax)
+    ax.legend()
     ax.set_xticklabels([])
 
     ax = fig.add_subplot(gs[3:5, 0])
@@ -148,9 +157,15 @@ def plot_timeseries(timeseries_db: Dict[Any, Any], title: str = None) -> None:
     prepare_axis(ax)
     mmm_plot(ax, "JVMOffHeapMemory", timeseries_db_df, "10. Peak ")
 
+    return fig
+
 
 def plot_notebook(application: sparkmon.Application) -> None:
     """Plot for notebook."""
     display.clear_output(True)
     application.plot()
     plt.show()
+
+    # To avoid memory leak
+    plt.clf()
+    plt.close()
