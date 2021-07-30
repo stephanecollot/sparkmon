@@ -41,6 +41,7 @@ class SparkMon(threading.Thread):
     Here are the advantage and disadvantage:
     + you can run the callbacks at a slower pace
     - it complexifies at lot and it creates a lot problem like race conditions and dead lock.
+    (we had this design at version 0.0.4)
 
     This is why we took the decision to use only 1 non-daemon thread and use atexit,
     to smoothly stop the monitoring at exit.
