@@ -54,7 +54,7 @@ class SparkMon(threading.Thread):
     ) -> None:
         """Constructor, initializes base class Thread."""
         threading.Thread.__init__(self)
-        self._stop = threading.Event()
+        self.stop_smooth_event = threading.Event()
         self.cnt = 0
         self.application = application
         self.application_lock = threading.Lock()
@@ -63,21 +63,20 @@ class SparkMon(threading.Thread):
             callbacks = []
         self.callbacks = callbacks
         self.updateEvent = threading.Event()
-        self.last_update = False
 
-    def stop(self) -> None:
-        """To stop the thread."""
-        self._stop.set()
+    def stop_smooth(self) -> None:
+        """Don't continue to run the loop, and exit safely the thread."""
+        self.stop_smooth_event.set()
 
-    def stopped(self) -> bool:
+    def stopped_smooth(self) -> bool:
         """Overrides Thread method."""
-        return self._stop.isSet()
+        return self.stop_smooth_event.isSet()
 
     def run(self) -> None:
         """Overrides Thread method."""
-        atexit.register(self.stop_next)
+        atexit.register(self.stop_smooth)
         while True:
-            if self.stopped():
+            if self.stopped_smooth():
                 return
 
             ###
@@ -97,9 +96,7 @@ class SparkMon(threading.Thread):
             # Callback can be run at a slower pace, specially if they are slow/expensive:
             self.callbacks_run()
 
-            # In order not to stop the thread in the middle of a callback:
-            if self.last_update:
-                self.stop()
+            if self.stopped_smooth():
                 return
 
             self.updateEvent.set()
@@ -127,7 +124,7 @@ class SparkMon(threading.Thread):
             cnt += 1
             if n_iter is not None and cnt > n_iter:
                 return
-            if self.stopped():
+            if self.stopped_smooth():
                 return
 
             with self.application_lock:
@@ -142,8 +139,4 @@ class SparkMon(threading.Thread):
 
     def __exit__(self, *args, **kwargs):
         """Stop thread in contextmanager."""
-        self.stop_next()
-
-    def stop_next(self):
-        """Don't continue to run the loop, and exit safely the thread."""
-        self.last_update = True
+        self.stop_smooth()
