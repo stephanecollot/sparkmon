@@ -60,4 +60,4 @@ def test_mlflow() -> None:
     mlflow.end_run()
     artifact_uri = file_uri_to_path(active_run.info.artifact_uri)
     assert (artifact_uri / "sparkmon/plot.png").stat().st_size > 100
-    assert (artifact_uri / "sparkmon/executors_db.csv").stat().st_size > 10
+    assert (artifact_uri / "sparkmon/timeseries.csv").stat().st_size > 10

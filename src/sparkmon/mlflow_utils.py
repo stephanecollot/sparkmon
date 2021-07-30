@@ -1,3 +1,21 @@
+# Copyright (c) 2021 ING Wholesale Banking Advanced Analytics
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """mlflow missing utilities."""
 import tempfile
 from contextlib import contextmanager
@@ -6,7 +24,7 @@ from pathlib import Path
 
 @contextmanager
 def log_file(artifact_full_path: str):
-    """Yield a file-object that is going to be savec as an artifact in mlflow.
+    """Yield a file-object that is going to be saved as an artifact in mlflow.
 
     mlflow API is really missing this functionality, so let's implement it via a temporary directory.
     """

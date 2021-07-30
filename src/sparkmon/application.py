@@ -1,4 +1,23 @@
+# Copyright (c) 2021 ING Wholesale Banking Advanced Analytics
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """Spark communication interface with its API, and managing historical API calls."""
+import warnings
 from datetime import datetime
 from typing import Any
 from typing import Dict
@@ -11,7 +30,8 @@ from pyspark.sql import SparkSession
 
 import sparkmon
 from sparkmon.utils import flatten_dict
-from sparkmon.utils import get_memory
+from sparkmon.utils import get_memory_process
+from sparkmon.utils import get_memory_user
 
 API_APPLICATIONS_LINK = "api/v1/applications"
 WEB_URL = "http://localhost:4040"
@@ -20,16 +40,19 @@ WEB_URL = "http://localhost:4040"
 class Application:
     """This class is an helper to query Spark API and save historical."""
 
-    def __init__(self, application_id: str, web_url: str = WEB_URL) -> None:
+    def __init__(self, application_id: str, web_url: str = WEB_URL, debug: bool = False) -> None:
         """An application is define by the Spark UI link and an application id.
 
         :param application_id: Spark applicationId
         :param web_url: Spark REST API server
+        :param debug: debug mode for development purposes, it store the row data
         """
         self.web_url = web_url
         self.application_id = application_id
+        self.debug = debug
 
         self.executors_db: Dict[Any, Any] = {}  # The key is timestamp
+        self.timeseries_db: Dict[Any, Any] = {}  # The key is timestamp
         self.stages_df: pd.DataFrame = pd.DataFrame()
         self.tasks_db: Dict[str, Dict[Any, Any]] = {}  # The key is stageId.attemptId
 
@@ -50,22 +73,25 @@ class Application:
         executors_df = self.get_executors_info()
 
         now = pd.to_datetime(datetime.now())
-        self.executors_db[now] = {
-            "executors_df": executors_df,  # Storing full row data
-            "local_memory_pct": psutil.virtual_memory()[2],  # Local machine memory usage
-            "process_memory_usage": get_memory(),  # Python process memory usage in bytes
-        }
-        self.executors_db[now].update(self.parse_executors(executors_df))
+        if self.debug:
+            self.executors_db[now] = executors_df  # Storing full row data
+
+        self.timeseries_db[now] = self.parse_executors(executors_df)
+        # Remark: local_memory_pct is a percentage, doesn't really work if you are running an kube
+        self.timeseries_db[now]["local_memory_pct"] = psutil.virtual_memory()[2]  # Local machine memory usage
+        self.timeseries_db[now]["process_memory_usage"] = get_memory_process()  # Local machine memory usage
+        self.timeseries_db[now]["user_memory_usage"] = get_memory_user()  # Local machine memory usage
 
     def parse_db(self) -> None:
         """Re-parse the full executors_db, usefull if you change the parsing function, for development."""
-        for t, v in self.executors_db.items():
-            executors_df = v["executors_df"]
-            self.executors_db[t].update(self.parse_executors(executors_df))
+        if not self.debug:
+            print("sparkmon: Warning, parse_db should be used with debug=True")
+        for t, executors_df in self.executors_db.items():
+            self.timeseries_db[t].update(self.parse_executors(executors_df))
 
     def plot(self) -> None:
         """Plotting."""
-        sparkmon.plot_db(self.executors_db)
+        sparkmon.plot_timeseries(self.get_timeseries_db_df(), title=self.application_id)
 
     @staticmethod
     def parse_executors(executors_df: pd.DataFrame) -> Dict[Any, Any]:
@@ -93,28 +119,35 @@ class Application:
         )
         executors_df["memoryUsedPct"] = executors_df["memoryUsed"] / executors_df["maxMemory"] * 100
 
-        def mmm(d: Dict[str, Any], executors_df: pd.DataFrame, col: str) -> Dict[str, Any]:
-            if col not in executors_df.columns:
-                return d
-            d[f"{col}_max"] = executors_df[col].max()
-            d[f"{col}_mean"] = executors_df[col].mean()
-            d[f"{col}_min"] = executors_df[col].min()
-            d[f"{col}_median"] = executors_df[col].median()
+        # Columns to aggregate
+        cols = [
+            "memoryUsedPct",
+            "usedOnHeapStorageMemoryPct",
+            "usedOffHeapStorageMemoryPct",
+            "totalOnHeapStorageMemory",
+            "totalOffHeapStorageMemory",
+            "ProcessTreePythonVMemory",
+            "ProcessTreePythonRSSMemory",
+            "JVMHeapMemory",
+            "JVMOffHeapMemory",
+            "OffHeapExecutionMemory",
+            "OnHeapExecutionMemory",
+        ]
 
-            return d
+        # Filter columns that are not on the DataFrame
+        cols = [col for col in cols if col in executors_df.columns]
 
-        d: Dict[str, Any] = {}
-        d = mmm(d, executors_df, "memoryUsedPct")
-        d = mmm(d, executors_df, "usedOnHeapStorageMemoryPct")
-        d = mmm(d, executors_df, "usedOffHeapStorageMemoryPct")
-        d = mmm(d, executors_df, "totalOnHeapStorageMemory")
-        d = mmm(d, executors_df, "totalOffHeapStorageMemory")
-        d = mmm(d, executors_df, "ProcessTreePythonVMemory")
-        d = mmm(d, executors_df, "ProcessTreePythonRSSMemory")
-        d = mmm(d, executors_df, "JVMHeapMemory")
-        d = mmm(d, executors_df, "JVMOffHeapMemory")
-        d = mmm(d, executors_df, "OffHeapExecutionMemory")
-        d = mmm(d, executors_df, "OnHeapExecutionMemory")
+        # Obtain aggregated values
+        # Let's filter: "RuntimeWarning: Mean of empty slice"
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+            res = executors_df[cols].agg(["max", "mean", "median", "min"])
+
+        # Convert to dict
+        d: Dict[str, Any] = {
+            f"{key}_{agg}": value for key, values in res.to_dict().items() for agg, value in values.items()
+        }
+
         d["numActive"] = len(executors_df.query("isActive"))
         d["memoryUsed_sum"] = executors_df["memoryUsed"].sum()
         d["maxMemory_sum"] = executors_df["maxMemory"].sum()
@@ -173,6 +206,11 @@ class Application:
                 tasks_list.append(t)
         tasks_df = pd.DataFrame(tasks_list)
         return tasks_df
+
+    def get_timeseries_db_df(self) -> pd.DataFrame:
+        """Return timeseries_db info into a DataFrame."""
+        timeseries_db_df = pd.DataFrame(self.timeseries_db).T
+        return timeseries_db_df
 
     def log_all(self) -> None:
         """Updating all information."""
