@@ -30,17 +30,20 @@ import sparkmon
 
 
 class SparkMon(threading.Thread):
-    """Class to manage a socket in a background thread to talk to the scala listener.
+    """Class to monitor a Spark application, running in the background.
 
-    This is a daemon thread, meaning that it is not blocking the exit of the application,
-    and can be abruptly stopped at shutdown.
-    But it is running the callbacks into a different Thread that is blocking,
-    meaning that they need to terminate to let the application exit.
-    Indeed, it is important to not run the callbacks in the daemon,
-    so that a file export callback wouldn't be interupted in the middle of saving.
+    There are multiple design patterns possible for this class.
+    One design possibility is to use 2 threads:
+    - a daemon thread for the regular update (non-blocking the exit)
+    - a non-daemon thread to run the callbacks (blocking the exit)
+    Indeed, in this design, it is important to not run the callbacks in the daemon,
+    so that a file export callbacks wouldn't be interrupted in the middle of saving.
+    Here are the advantage and disadvantage:
+    + you can run the callbacks at a slower pace
+    - it complexifies at lot and it creates a lot problem like race conditions and dead lock.
 
-    In case of problem, we could do another architecture: just one thread, this one,
-    with deamon=False, and using 'atexit' to safely end the monitoring and not blocking the app.
+    This is why we took the decision to use only 1 non-daemon thread and use atexit,
+    to smoothly stop the monitoring at exit.
 
     Remark: The same 'application' should not be updated by something else, like other SparkMon instances,
     because it could create race conditions.
@@ -74,28 +77,31 @@ class SparkMon(threading.Thread):
 
     def run(self) -> None:
         """Overrides Thread method."""
+        # This is a Thread class (non daemon) meaning it can run for ever and block the exit of Python at the end.
+        # This is why we register a function to stop SparkMon in a smooth manner at exit:
         atexit.register(self.stop_smooth)
+
         while True:
             if self.stopped_smooth():
                 return
 
-            ###
-            # Updating the application DB at the regular period:
+            # Updating the application DB
             try:
                 # Callbacks are reading application, so let's make thread safe with a lock:
                 with self.application_lock:
                     self.application.log_all()
                     self.cnt += 1
             except urllib.error.URLError as ex:
+                # Continue to wait for the start of the app
                 if self.cnt > 1:
+                    # Not need to print if we exited or stopped
                     if not self.stopped_smooth():
                         print(
                             f"sparkmon: Info, Spark application not available anymore, stopping monitoring. Exception: {ex}"
                         )
                     return
 
-            ###
-            # Callback can be run at a slower pace, specially if they are slow/expensive:
+            # Run the callback
             self.callbacks_run()
 
             if self.stopped_smooth():
@@ -113,7 +119,7 @@ class SparkMon(threading.Thread):
     def live_plot_notebook(self, n_iter=None) -> None:
         """Useful in the remote case only.
 
-        This is not compatible with callbacks that are using matplotlib, because matplotlib is not thread safe,
+        This might not be compatible with callbacks that are using matplotlib, because matplotlib is not thread safe,
         and you can get the following errors:
         ```
         python(81469,0x1106c5e00) malloc: Incorrect checksum for freed object 0x7fe18da140a8: probably modified after being freed.
