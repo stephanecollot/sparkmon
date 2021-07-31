@@ -134,7 +134,7 @@ This will allow a chance to talk it over with the owners and validate your appro
 How release a new version
 -------------------------
 
-Make a new branch only to make the release, then:
+Make a new branch only to make the release and run `poetry version`, as follow:
 
 .. code:: console
 
@@ -148,6 +148,6 @@ Make a new branch only to make the release, then:
    $ git push
 
 Then make a pull request, and merge it to master.
-Then make a release note in Github.
+It will automatically: make a release note in Github, make a tag and release to PyPI
 
 https://cookiecutter-hypermodern-python.readthedocs.io/en/2021.7.15/guide.html#how-to-make-a-release
