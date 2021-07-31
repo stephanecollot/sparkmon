@@ -58,7 +58,7 @@ class SparkMon(threading.Thread):
     ) -> None:
         """Constructor, initializes base class Thread."""
         threading.Thread.__init__(self)
-        self.stop_smooth_event = threading.Event()
+        self.stop_event = threading.Event()
         self.cnt = 0
         self.application = application
         self.application_lock = threading.Lock()
@@ -68,22 +68,22 @@ class SparkMon(threading.Thread):
         self.callbacks = callbacks
         self.updateEvent = threading.Event()
 
-    def stop_smooth(self) -> None:
+    def stop(self) -> None:
         """Don't continue to run the loop, and exit safely the thread."""
-        self.stop_smooth_event.set()
+        self.stop_event.set()
 
-    def stopped_smooth(self) -> bool:
-        """Overrides Thread method."""
-        return self.stop_smooth_event.isSet()
+    def stopped(self) -> bool:
+        """Check if we need to stop."""
+        return self.stop_event.isSet()
 
     def run(self) -> None:
         """Overrides Thread method."""
         # This is a Thread class (non daemon) meaning it can run for ever and block the exit of Python at the end.
         # This is why we register a function to stop SparkMon in a smooth manner at exit:
-        atexit.register(self.stop_smooth)
+        atexit.register(self.stop)
 
         while True:
-            if self.stopped_smooth():
+            if self.stopped():
                 return
 
             # Updating the application DB
@@ -96,7 +96,7 @@ class SparkMon(threading.Thread):
                 # Continue to wait for the start of the app
                 if self.cnt > 1:
                     # Not need to print if we exited or stopped
-                    if not self.stopped_smooth():
+                    if not self.stopped():
                         print(
                             f"sparkmon: Info, Spark application not available anymore, stopping monitoring. (Exception: {ex})"
                         )
@@ -105,7 +105,7 @@ class SparkMon(threading.Thread):
             # Run the callback
             self.callbacks_run()
 
-            if self.stopped_smooth():
+            if self.stopped():
                 return
 
             self.updateEvent.set()
@@ -133,7 +133,7 @@ class SparkMon(threading.Thread):
             cnt += 1
             if n_iter is not None and cnt > n_iter:
                 return
-            if self.stopped_smooth():
+            if self.stopped():
                 return
 
             with self.application_lock:
@@ -148,4 +148,4 @@ class SparkMon(threading.Thread):
 
     def __exit__(self, *args, **kwargs):
         """Stop thread in contextmanager."""
-        self.stop_smooth()
+        self.stop()
