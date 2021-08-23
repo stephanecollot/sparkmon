@@ -63,6 +63,9 @@ def test_exception() -> None:
 
     mon = sparkmon.SparkMon(application, period=1)
     mon.start()
+
+    assert mon.is_main_thread_alive()
+
     spark.stop()
 
     mon.stop()
