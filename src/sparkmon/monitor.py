@@ -17,7 +17,6 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """Monitor thread."""
-import atexit
 import threading
 import time
 import urllib
@@ -43,7 +42,7 @@ class SparkMon(threading.Thread):
     - it complexifies at lot and it creates a lot problem like race conditions and dead lock.
     (we had this design at version 0.0.4)
 
-    This is why we took the decision to use only 1 non-daemon thread and use atexit,
+    This is why we took the decision to use only 1 non-daemon thread and check the MainThread status,
     to smoothly stop the monitoring at exit.
 
     Remark: The same 'application' should not be updated by something else, like other SparkMon instances,
@@ -76,15 +75,22 @@ class SparkMon(threading.Thread):
         """Check if we need to stop."""
         return self.stop_event.isSet()
 
+    def is_main_thread_alive(self) -> bool:
+        """Check if the main thread is alive."""
+        for t in threading.enumerate():
+            if t.name == "MainThread":
+                return t.is_alive()
+
     def run(self) -> None:
         """Overrides Thread method."""
-        # This is a Thread class (non daemon) meaning it can run for ever and block the exit of Python at the end.
-        # This is why we register a function to stop SparkMon in a smooth manner at exit:
-        atexit.register(self.stop)
-
         while True:
             if self.stopped():
                 return
+
+            # This is a Thread class (non daemon) meaning it can run for ever and block the exit of Python at the end.
+            # This is why we check if the main thread is finished to stop SparkMon in a smooth manner at exit:
+            if not self.is_main_thread_alive():
+                self.stop()
 
             # Updating the application DB
             try:
