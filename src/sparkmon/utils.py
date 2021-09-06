@@ -60,7 +60,12 @@ def get_memory_user() -> Any:
     for p in psutil.process_iter():
         try:
             if p.username() == user:
-                total += p.memory_info().rss
+                try:
+                    total += p.memory_info().rss
+                except psutil.ZombieProcess:
+                    # For some process we might get this issue:
+                    # psutil.ZombieProcess: psutil.ZombieProcess process still exists but it's a zombie
+                    pass
         except psutil.AccessDenied:
             # For some process we might permission issue, with the following error
             # psutil AccessDenied: psutil.AccessDenied (pid=599, name='PanGPS')
