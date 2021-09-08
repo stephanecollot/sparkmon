@@ -62,6 +62,7 @@ def mmm_plot(
     if f"{value}_max" not in timeseries_db_df.columns:
         return
 
+    timeseries_db_df[f"{value}_driver"].plot(label="driver", ax=ax, ylim=ylim)
     timeseries_db_df[f"{value}_max"].plot(label="max", ax=ax, ylim=ylim)
     timeseries_db_df[f"{value}_median"].plot(label="median", ax=ax, ylim=ylim)
     timeseries_db_df[f"{value}_mean"].plot(label="mean", ax=ax, ylim=ylim)

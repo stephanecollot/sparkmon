@@ -143,12 +143,15 @@ class Application:
         # Let's filter: "RuntimeWarning: Mean of empty slice"
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=RuntimeWarning)
-            res = executors_df[cols].agg(["max", "mean", "median", "min"])
+            res = executors_df.iloc[1:][cols].agg(["max", "mean", "median", "min"])
 
         # Convert to dict
         d: Dict[str, Any] = {
             f"{key}_{agg}": value for key, values in res.to_dict().items() for agg, value in values.items()
         }
+
+        for c in cols:
+            d[f"{c}_driver"] = executors_df.iloc[0][c]
 
         d["numActive"] = len(executors_df.query("isActive"))
         d["memoryUsed_sum"] = executors_df["memoryUsed"].sum()

@@ -23,6 +23,7 @@ import math
 import os
 from typing import Any
 
+import numpy as np
 import psutil
 
 
@@ -33,6 +34,8 @@ def convert_size(size_bytes) -> str:
     """
     if size_bytes == 0:
         return "0"
+    elif size_bytes is None or np.isnan(size_bytes):
+        return ""
     elif size_bytes < 0:
         sign = -1
         size_bytes = size_bytes * -1
