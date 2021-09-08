@@ -62,11 +62,17 @@ def mmm_plot(
     if f"{value}_max" not in timeseries_db_df.columns:
         return
 
-    timeseries_db_df[f"{value}_driver"].plot(label="driver", ax=ax, ylim=ylim)
-    timeseries_db_df[f"{value}_max"].plot(label="max", ax=ax, ylim=ylim)
-    timeseries_db_df[f"{value}_median"].plot(label="median", ax=ax, ylim=ylim)
-    timeseries_db_df[f"{value}_mean"].plot(label="mean", ax=ax, ylim=ylim)
-    timeseries_db_df[f"{value}_min"].plot(label="min", ax=ax, ylim=ylim)
+    def clean_all_na(s):
+        if s.isna().all():
+            s = s.fillna(0)
+        return s
+
+    clean_all_na(timeseries_db_df[f"{value}_driver"]).plot(label="driver", ax=ax, ylim=ylim)
+    clean_all_na(timeseries_db_df[f"{value}_max"]).plot(label="max", ax=ax, ylim=ylim)
+    clean_all_na(timeseries_db_df[f"{value}_median"]).plot(label="median", ax=ax, ylim=ylim)
+    clean_all_na(timeseries_db_df[f"{value}_mean"]).plot(label="mean", ax=ax, ylim=ylim)
+    clean_all_na(timeseries_db_df[f"{value}_min"]).plot(label="min", ax=ax, ylim=ylim)
+
     if not pct:
         ax_convert_size(ax)
     ax.legend()
