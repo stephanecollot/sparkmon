@@ -62,6 +62,7 @@ class SparkMon(threading.Thread):
         """Constructor, initializes base class Thread."""
         threading.Thread.__init__(self)
         self.stop_event = threading.Event()
+        self.update_cnt = 0
         self.application = application
         self.application_lock = threading.Lock()
         self.period = period
@@ -103,6 +104,7 @@ class SparkMon(threading.Thread):
                 # Callbacks are reading application, so let's make thread safe with a lock:
                 with self.application_lock:
                     self.application.log_all()
+                    self.update_cnt += 1
             except (
                 urllib.error.URLError,
                 requests.exceptions.ConnectionError,
