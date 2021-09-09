@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sparkmon"
-version = "0.0.7"
+version = "0.0.8"
 description = "sparkmon"
 authors = ["Stephane Collot <stephane.collot@ing.com>"]
 license = "MIT"
