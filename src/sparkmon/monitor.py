@@ -17,6 +17,7 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """Monitor thread."""
+import http
 import threading
 import time
 import urllib
@@ -24,6 +25,9 @@ from typing import Any
 from typing import Callable
 from typing import List
 from typing import Optional
+
+import requests
+import urllib3
 
 import sparkmon
 
@@ -98,7 +102,12 @@ class SparkMon(threading.Thread):
                 with self.application_lock:
                     self.application.log_all()
                     self.cnt += 1
-            except urllib.error.URLError as ex:
+            except (
+                urllib.error.URLError,
+                requests.exceptions.ConnectionError,
+                http.client.RemoteDisconnected,
+                urllib3.exceptions.ProtocolError,
+            ) as ex:
                 # Continue to wait for the start of the app
                 if self.cnt > 1:
                     # Not need to print if we exited or stopped
