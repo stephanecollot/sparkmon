@@ -17,7 +17,6 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """Spark communication interface with its API, and managing historical API calls."""
-import http
 import warnings
 from datetime import datetime
 from typing import Any
@@ -26,7 +25,6 @@ from typing import Dict
 import pandas as pd
 import psutil
 import requests
-import urllib3
 import urlpath
 from pyspark.sql import SparkSession
 
@@ -216,16 +214,9 @@ class Application:
 
     def log_all(self) -> None:
         """Updating all information."""
-        try:
-            self.log_executors_info()
-            self.log_stages()
-            self.log_tasks()
-        except requests.exceptions.ConnectionError as e:
-            print(f"sparkmon: Warning ConnectionError while updating all information: {e}")
-        except http.client.RemoteDisconnected as e:
-            print(f"sparkmon: Warning RemoteDisconnected while updating all information: {e}")
-        except urllib3.exceptions.ProtocolError as e:
-            print(f"sparkmon: Warning ProtocolError while updating all information: {e}")
+        self.log_executors_info()
+        self.log_stages()
+        self.log_tasks()
 
 
 def get_application_ids(web_url: str = WEB_URL) -> pd.DataFrame:

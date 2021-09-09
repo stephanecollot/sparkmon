@@ -41,7 +41,7 @@ def test_plot_to_image() -> None:
 
     time.sleep(14)
     mon.stop()
-    assert mon.cnt >= 2
+    assert mon.update_cnt >= 2
 
 
 def test_mlflow() -> None:
@@ -54,7 +54,7 @@ def test_mlflow() -> None:
 
     time.sleep(14)
     mon.stop()
-    assert mon.cnt >= 2
+    assert mon.update_cnt >= 2
 
     active_run = sparkmon.mlflow_utils.active_run()
     mlflow.end_run()

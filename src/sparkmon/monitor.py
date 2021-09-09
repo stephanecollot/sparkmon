@@ -17,6 +17,7 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """Monitor thread."""
+import http
 import threading
 import time
 import urllib
@@ -24,6 +25,9 @@ from typing import Any
 from typing import Callable
 from typing import List
 from typing import Optional
+
+import requests
+import urllib3
 
 import sparkmon
 
@@ -58,7 +62,7 @@ class SparkMon(threading.Thread):
         """Constructor, initializes base class Thread."""
         threading.Thread.__init__(self)
         self.stop_event = threading.Event()
-        self.cnt = 0
+        self.update_cnt = 0
         self.application = application
         self.application_lock = threading.Lock()
         self.period = period
@@ -66,6 +70,7 @@ class SparkMon(threading.Thread):
             callbacks = []
         self.callbacks = callbacks
         self.updateEvent = threading.Event()
+        self.timeout_sec = 20
 
     def stop(self) -> None:
         """Don't continue to run the loop, and exit safely the thread."""
@@ -83,6 +88,8 @@ class SparkMon(threading.Thread):
 
     def run(self) -> None:
         """Overrides Thread method."""
+        self.start_time = time.time()
+
         while True:
             if self.stopped():
                 return
@@ -97,15 +104,26 @@ class SparkMon(threading.Thread):
                 # Callbacks are reading application, so let's make thread safe with a lock:
                 with self.application_lock:
                     self.application.log_all()
-                    self.cnt += 1
-            except urllib.error.URLError as ex:
-                # Continue to wait for the start of the app
-                if self.cnt > 1:
+                    self.update_cnt += 1
+            except (
+                urllib.error.URLError,
+                requests.exceptions.ConnectionError,
+                http.client.RemoteDisconnected,
+                urllib3.exceptions.ProtocolError,
+            ) as ex:
+                # If we get a connection exception, it either means:
+                # - The Spark application didn't fully started yet, and we should wait.
+                # - The Spark application is closed, and we should stop monitoring.
+                # So we get this exception after the timeout time, let's stop monitoring,
+                # so that the main Python process can exit smoothly
+                elapsed_sec = time.time() - self.start_time
+                if elapsed_sec > self.timeout_sec:
                     # Not need to print if we exited or stopped
                     if not self.stopped():
                         print(
                             f"sparkmon: Info, Spark application not available anymore, stopping monitoring. (Exception: {ex})"
                         )
+                    self.stop()
                     return
 
             # Run the callback
