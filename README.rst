@@ -44,6 +44,7 @@ Features
 Monitoring plot example:
 
 .. image:: docs/_static/monitoring-plot-example.png
+Disclaimer: Be aware that if you run Spark in local mode some of the subplots will be empty, sparkmon is designed to analyse Spark applications running in a cluster.
 
 * Log the executors metrics
 * Plot monitoring, display in a notebook, or export to a file
