@@ -44,6 +44,7 @@ Features
 Monitoring plot example:
 
 .. image:: docs/_static/monitoring-plot-example.png
+Disclaimer: Be aware that if you run Spark in local mode some of the subplots will be empty, sparkmon is designed to analyse Spark applications running in a cluster.
 
 * Log the executors metrics
 * Plot monitoring, display in a notebook, or export to a file
@@ -73,6 +74,24 @@ You can install *sparkmon* via pip_ from PyPI_:
 
 Usage
 -----
+
+Simple use-case:
+
+.. code-block:: python
+
+   import sparkmon
+
+   # Create and start the monitoring process via a Spark session
+   mon = sparkmon.SparkMon(spark, period=5, callbacks=[
+       sparkmon.callbacks.plot_to_image,
+       sparkmon.callbacks.log_to_mlflow,
+   ])
+   mon.start()
+
+   # Stop monitoring
+   mon.stop()
+
+More advanced use-case:
 
 .. code-block:: python
 

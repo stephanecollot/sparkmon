@@ -43,6 +43,23 @@ def test_create_context_manager_application_from_link() -> None:
     assert mon.update_cnt == 3
 
 
+def test_sparkmon_direct_from_spark() -> None:
+    """Basic test."""
+    spark = get_spark()
+
+    with sparkmon.SparkMon(spark, period=5) as mon:
+        time.sleep(14)
+
+    assert mon.update_cnt == 3
+
+    try:
+        sparkmon.SparkMon("string", period=5)
+    except TypeError:
+        assert True
+    else:
+        raise AssertionError()
+
+
 def test_application_other() -> None:
     """Test parse_db."""
     spark = get_spark()

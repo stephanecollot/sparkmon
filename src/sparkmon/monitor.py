@@ -25,15 +25,17 @@ from typing import Any
 from typing import Callable
 from typing import List
 from typing import Optional
+from typing import Union
 
 import requests
 import urllib3
+from pyspark.sql import SparkSession
 
 import sparkmon
 
 
 class SparkMon(threading.Thread):
-    """Class to monitor a Spark application, running in the background.
+    """Class to monitor a sparkmon application or a Spark Session, running in the background.
 
     There are multiple design patterns possible for this class.
     One design possibility is to use 2 threads:
@@ -55,7 +57,7 @@ class SparkMon(threading.Thread):
 
     def __init__(
         self,
-        application: sparkmon.Application,
+        application_or_spark: Union[sparkmon.Application, SparkSession],
         period: int = 20,
         callbacks: Optional[List[Callable[..., Any]]] = None,
     ) -> None:
@@ -63,7 +65,12 @@ class SparkMon(threading.Thread):
         threading.Thread.__init__(self)
         self.stop_event = threading.Event()
         self.update_cnt = 0
-        self.application = application
+        if isinstance(application_or_spark, sparkmon.Application):
+            self.application = application_or_spark
+        elif isinstance(application_or_spark, SparkSession):
+            self.application = sparkmon.application.create_application_from_spark(application_or_spark)
+        else:
+            raise TypeError(f"First argument `application_or_spark` is unsupported type {type(application_or_spark)}")
         self.application_lock = threading.Lock()
         self.period = period
         if callbacks is None:
