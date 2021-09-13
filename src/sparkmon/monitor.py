@@ -35,7 +35,7 @@ import sparkmon
 
 
 class SparkMon(threading.Thread):
-    """Class to monitor a Spark application, running in the background.
+    """Class to monitor a sparkmon application or a Spark Session, running in the background.
 
     There are multiple design patterns possible for this class.
     One design possibility is to use 2 threads:
