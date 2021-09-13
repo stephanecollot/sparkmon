@@ -70,7 +70,7 @@ class SparkMon(threading.Thread):
         elif isinstance(application_or_spark, SparkSession):
             self.application = sparkmon.application.create_application_from_spark(application_or_spark)
         else:
-            raise Exception(f"First argument `application_or_spark` is unsupported type {type(application_or_spark)}")
+            raise TypeError(f"First argument `application_or_spark` is unsupported type {type(application_or_spark)}")
         self.application_lock = threading.Lock()
         self.period = period
         if callbacks is None:

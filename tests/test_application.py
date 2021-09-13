@@ -54,7 +54,7 @@ def test_sparkmon_direct_from_spark() -> None:
 
     try:
         sparkmon.SparkMon("string", period=5)
-    except Exception:
+    except TypeError:
         assert True
     else:
         raise AssertionError()
