@@ -20,7 +20,7 @@ Changelog = "https://github.com/stephanecollot/sparkmon/releases"
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-click = "^8.0.1"
+click = "*"
 pyspark = "*"
 pandas = "*"
 pandas-stubs = "*"
