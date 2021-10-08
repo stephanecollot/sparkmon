@@ -41,7 +41,7 @@ def test_plot_to_image() -> None:
 
     time.sleep(14)
     mon.stop()
-    assert mon.update_cnt >= 2
+    assert mon.update_cnt >= 1
 
 
 def test_mlflow() -> None:
