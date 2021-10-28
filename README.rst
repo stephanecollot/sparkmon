@@ -35,7 +35,7 @@ sparkmon
 Description
 -----------
 
-``sparkmon`` is a Python package to monitor Spark applications. You can see it as an advanced Spark UI, that keep track all of `Spark REST API <SparkREST_>`_ metrics over time. It is specifically useful to do memory profiling.
+``sparkmon`` is a Python package to monitor Spark applications. You can see it as an advanced Spark UI, that keeps track all of `Spark REST API <SparkREST_>`_ metrics **over time**, which makes it quite unique compare to other solutions (see comparison_ below). It is specifically useful to do memory profiling, including Python UDF memory.
 
 
 Features
@@ -52,6 +52,27 @@ Disclaimer: Be aware that if you run Spark in local mode some of the subplots wi
 * Can monitor remote Spark application
 * Can run directly in your PySpark application, or run in a notebook, or via the command-line interface
 * Log to mlflow
+
+
+Comparison with other solutions
+-------------------------------
+
+This package brings much more information than Spark UI or other packages. Here is a quick comparison:
+
+- sparkmonitor_:
+ - Nice integration in notebook
+ - Doesn't bring more information that Spark UI, specially not memory usage over time.
+- sparklint_:
+ - Need to launch a server locally, might be difficult on-premise. sparkmon doesn't need to have a port accessible.
+ - Monitors only CPU over time, sparkmon monitors everything including Java and Python memory overtime.
+ - No update since 2018
+- `Data Mechanics Delight`_
+ - Really nice and complete
+ - But cannot work fully on-premise
+ - Is not fully open-source
+- Sparklens_
+ - But cannot work fully on-premise
+ - Is not fully open-source
 
 
 Requirements
@@ -165,3 +186,8 @@ This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter
 .. _Usage: https://sparkmon.readthedocs.io/en/latest/usage.html
 .. _Example: https://sparkmon.readthedocs.io/en/latest/example.html
 .. _SparkREST: https://spark.apache.org/docs/latest/monitoring.html#rest-api
+.. _sparkmonitor: https://krishnan-r.github.io/sparkmonitor/
+.. _sparklint: https://github.com/groupon/sparklint
+.. _comparison: #comparison-with-other-solutions
+.. _Data Mechanics Delight: https://www.datamechanics.co/delight
+.. _Sparklens: http://sparklens.qubole.com/
