@@ -63,24 +63,24 @@ This package brings much more information than Spark UI or other packages. Here 
 
   - Nice integration in notebook
   - Doesn't bring more information that Spark UI, specially not memory usage over time.
- 
+
 - sparklint_:
 
   - Need to launch a server locally, might be difficult on-premise. sparkmon doesn't need to have a port accessible.
   - Monitors only CPU over time, sparkmon monitors everything including Java and Python memory overtime.
   - No update since 2018
- 
+
 - `Data Mechanics Delight`_:
 
   - Really nice and complete
   - But cannot work fully on-premise
   - Is not fully open-source
- 
+
 - Sparklens_:
 
   - But cannot work fully on-premise
   - Is not fully open-source
-  
+
 
 
 Requirements
