@@ -49,7 +49,7 @@ def log_file(artifact_full_path: str):
         yield fp
     finally:
         fp.close()
-        mlflow.log_artifact(local_path=local_path_tmp, artifact_path=artifact_path)
+        mlflow.log_artifact(local_path=str(local_path_tmp), artifact_path=artifact_path)
 
     tmpdir.cleanup()
 
