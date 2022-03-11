@@ -106,6 +106,10 @@ class SparkMon(threading.Thread):
             if not self.is_main_thread_alive():
                 self.stop()
 
+            # We wait at the beginning of the loop, and not at the end,
+            # to let the Spark session start and MLflow run at the beginning
+            time.sleep(self.period)
+
             # Updating the application DB
             try:
                 # Callbacks are reading application, so let's make thread safe with a lock:
@@ -140,7 +144,6 @@ class SparkMon(threading.Thread):
                 return
 
             self.updateEvent.set()
-            time.sleep(self.period)
 
     def callbacks_run(self):
         """Running the callbacks."""

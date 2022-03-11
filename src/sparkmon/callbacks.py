@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 
 from sparkmon import Application
 from sparkmon.mlflow_utils import log_file
+from sparkmon.plotting import clear_plt
 
 
 def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
@@ -43,9 +44,7 @@ def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
     application.plot()
     plt.savefig(path)
 
-    # To avoid memory leak
-    plt.clf()
-    plt.close()
+    clear_plt()
 
 
 def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") -> None:
@@ -63,9 +62,7 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
     with log_file(path) as fp:
         plt.savefig(fp.name)
 
-    # To avoid memory leak
-    plt.clf()
-    plt.close()
+    clear_plt()
 
 
 def log_timeseries_db_to_mlflow(application: Application, path: str = "sparkmon/timeseries.csv") -> None:
