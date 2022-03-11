@@ -16,7 +16,7 @@ def test_create_application_from_spark() -> None:
 
     time.sleep(14)
     mon.stop()
-    assert mon.update_cnt == 3
+    assert mon.update_cnt == 2
 
 
 def test_create_application_from_link() -> None:
@@ -29,7 +29,7 @@ def test_create_application_from_link() -> None:
 
     time.sleep(14)
     mon.stop()
-    assert mon.update_cnt == 3
+    assert mon.update_cnt == 2
 
 
 def test_create_context_manager_application_from_link() -> None:
@@ -40,7 +40,7 @@ def test_create_context_manager_application_from_link() -> None:
     with sparkmon.SparkMon(application, period=5) as mon:
         time.sleep(14)
 
-    assert mon.update_cnt == 3
+    assert mon.update_cnt == 2
 
 
 def test_sparkmon_direct_from_spark() -> None:
@@ -50,7 +50,7 @@ def test_sparkmon_direct_from_spark() -> None:
     with sparkmon.SparkMon(spark, period=5) as mon:
         time.sleep(14)
 
-    assert mon.update_cnt == 3
+    assert mon.update_cnt == 2
 
     try:
         sparkmon.SparkMon("string", period=5)
