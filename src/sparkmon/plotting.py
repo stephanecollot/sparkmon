@@ -166,6 +166,14 @@ def plot_notebook(application: sparkmon.Application) -> None:
     application.plot()
     plt.show()
 
-    # To avoid memory leak
-    plt.clf()
+    clear_plt()
+
+
+def clear_plt():
+    """To avoid memory leak."""
+    try:
+        plt.clf()
+    except KeyError:
+        # It seems with an empty figure we get the following error: "KeyError: <AxesSubplot:>"
+        pass
     plt.close()
