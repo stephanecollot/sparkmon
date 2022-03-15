@@ -82,13 +82,17 @@ def prepare_axis(ax: matplotlib.axes.Axes) -> None:
 
 def plot_timeseries(timeseries_db_df: pd.DataFrame, title: str = None) -> matplotlib.figure.Figure:
     """Plot timeseries DB."""
-    if len(timeseries_db_df) == 0:
-        return plt.figure()
-
     fig = plt.figure(constrained_layout=False, figsize=(28, 16), tight_layout={"pad": 0})
     gs = fig.add_gridspec(9, 2)
     if title is not None:
         fig.suptitle(title, y=1)
+
+    if len(timeseries_db_df) == 0:
+        if title is not None:
+            fig.suptitle("{title}\nNo data to plot", y=1)
+        else:
+            fig.suptitle("No data to plot", y=1)
+        return fig
 
     ax = fig.add_subplot(gs[0, 0])
     prepare_axis(ax)
@@ -173,7 +177,8 @@ def clear_plt():
     """To avoid memory leak."""
     try:
         plt.clf()
-    except KeyError:
+    except BaseException:
         # It seems with an empty figure we get the following error: "KeyError: <AxesSubplot:>"
+        # And we can get "TypeError: object of type 'NoneType' has no len()"
         pass
     plt.close()
