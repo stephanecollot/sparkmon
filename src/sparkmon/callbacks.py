@@ -61,6 +61,12 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
     application.plot()
     with log_file(path) as fp:
         plt.savefig(fp.name)
+        """
+        We some time get this exception:
+        File "/home/vsts/.local/lib/python3.8/site-packages/matplotlib/axis.py", line 1937, in _get_ticks_position
+            minor = self.minorTicks[0]
+        IndexError: list index out of range
+        """
 
     clear_plt()
 

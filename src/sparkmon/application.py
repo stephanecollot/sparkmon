@@ -184,6 +184,8 @@ class Application:
             )
 
             stage_detail_r = requests.get(url)
+
+            # We some time get this exception: simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
             stage_detail = stage_detail_r.json()
 
             tasks = stage_detail["tasks"]
