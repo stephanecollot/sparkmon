@@ -26,9 +26,10 @@ import matplotlib
 import pandas as pd
 import psutil
 import requests
-import sparkmon
 import urlpath
 from pyspark.sql import SparkSession
+
+import sparkmon
 from sparkmon.utils import flatten_dict
 from sparkmon.utils import get_memory_process
 from sparkmon.utils import get_memory_user

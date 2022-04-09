@@ -1,7 +1,7 @@
 """Testing plotting."""
 import matplotlib.pyplot as plt
-import sparkmon
 
+import sparkmon
 from .utils import get_spark
 
 

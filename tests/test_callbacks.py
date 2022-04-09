@@ -4,8 +4,8 @@ import time
 import urllib
 
 import mlflow
-import sparkmon
 
+import sparkmon
 from .utils import get_spark
 
 

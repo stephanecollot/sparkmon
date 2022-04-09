@@ -23,8 +23,9 @@ from typing import Callable
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
-import sparkmon
 from IPython import display
+
+import sparkmon
 from sparkmon.utils import convert_size
 
 
