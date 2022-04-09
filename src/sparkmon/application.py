@@ -23,6 +23,7 @@ from typing import Any
 from typing import Dict
 
 import matplotlib
+import matplotlib.pyplot as plt  # noqa: F401  # To avoid AttributeError: module 'matplotlib' has no attribute 'figure'
 import pandas as pd
 import psutil
 import requests
