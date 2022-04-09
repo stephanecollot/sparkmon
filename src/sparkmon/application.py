@@ -22,13 +22,13 @@ from datetime import datetime
 from typing import Any
 from typing import Dict
 
+import matplotlib
 import pandas as pd
 import psutil
 import requests
+import sparkmon
 import urlpath
 from pyspark.sql import SparkSession
-
-import sparkmon
 from sparkmon.utils import flatten_dict
 from sparkmon.utils import get_memory_process
 from sparkmon.utils import get_memory_user
@@ -89,7 +89,7 @@ class Application:
         for t, executors_df in self.executors_db.items():
             self.timeseries_db[t].update(self.parse_executors(executors_df))
 
-    def plot(self) -> None:
+    def plot(self) -> matplotlib.figure.Figure:
         """Plotting."""
         return sparkmon.plot_timeseries(self.get_timeseries_db_df(), title=self.application_id)
 
