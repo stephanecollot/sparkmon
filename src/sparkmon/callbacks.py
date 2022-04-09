@@ -75,13 +75,13 @@ def log_timeseries_db_to_mlflow(application: Application, path: str = "sparkmon/
     """Log timeseries_db to mlflow."""
     timeseries_db_df = application.get_timeseries_db_df()
     with log_file(path) as fp:
-        timeseries_db_df.to_csv(fp, index=False)
+        timeseries_db_df.to_csv(fp)  # the index contains the timestamp
 
 
 def log_tasks_to_mlflow(application: Application, path: str = "sparkmon/tasks.csv") -> None:
     """Log tasks to mlflow."""
     with log_file(path) as fp:
-        application.get_tasks_df().to_csv(fp, index=False)
+        application.get_tasks_df().to_csv(fp, index=False)  # no relevant info in the index
 
 
 def log_stages_to_mlflow(application: Application, path: str = "sparkmon/stages.csv") -> None:
