@@ -24,7 +24,6 @@ import matplotlib.pyplot as plt
 
 from sparkmon import Application
 from sparkmon.mlflow_utils import log_file
-from sparkmon.plotting import clear_plt
 
 
 def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
@@ -41,10 +40,10 @@ def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
         print("set backend")
         plt.switch_backend(backend)
 
-    application.plot()
-    plt.savefig(path)
+    fig = application.plot()
+    fig.savefig(path)
 
-    clear_plt()
+    plt.close(fig)
 
 
 def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") -> None:
@@ -58,9 +57,9 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
         print("set backend")
         plt.switch_backend(backend)
 
-    application.plot()
+    fig = application.plot()
     with log_file(path) as fp:
-        plt.savefig(fp.name)
+        fig.savefig(fp.name)
         """
         We some time get this exception:
         File "/home/vsts/.local/lib/python3.8/site-packages/matplotlib/axis.py", line 1937, in _get_ticks_position
@@ -68,7 +67,7 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
         IndexError: list index out of range
         """
 
-    clear_plt()
+    plt.close(fig)
 
 
 def log_timeseries_db_to_mlflow(application: Application, path: str = "sparkmon/timeseries.csv") -> None:
@@ -87,7 +86,7 @@ def log_tasks_to_mlflow(application: Application, path: str = "sparkmon/tasks.cs
 def log_stages_to_mlflow(application: Application, path: str = "sparkmon/stages.csv") -> None:
     """Log tasks to mlflow."""
     with log_file(path) as fp:
-        application.stages_df.to_csv(fp, index=False)
+        application.stages_df.to_csv(fp, index=False)  # no relevant info in the index
 
 
 def log_to_mlflow(application: Application) -> None:

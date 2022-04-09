@@ -91,7 +91,7 @@ class Application:
 
     def plot(self) -> None:
         """Plotting."""
-        sparkmon.plot_timeseries(self.get_timeseries_db_df(), title=self.application_id)
+        return sparkmon.plot_timeseries(self.get_timeseries_db_df(), title=self.application_id)
 
     @staticmethod
     def parse_executors(executors_df: pd.DataFrame) -> Dict[Any, Any]:

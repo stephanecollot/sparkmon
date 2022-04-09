@@ -167,18 +167,7 @@ def plot_timeseries(timeseries_db_df: pd.DataFrame, title: str = None) -> matplo
 def plot_notebook(application: sparkmon.Application) -> None:
     """Plot for notebook."""
     display.clear_output(True)
-    application.plot()
+    fig = application.plot()
     plt.show()
 
-    clear_plt()
-
-
-def clear_plt():
-    """To avoid memory leak."""
-    try:
-        plt.clf()
-    except BaseException:
-        # It seems with an empty figure we get the following error: "KeyError: <AxesSubplot:>"
-        # And we can get "TypeError: object of type 'NoneType' has no len()"
-        pass
-    plt.close()
+    plt.close(fig)
