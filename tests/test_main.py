@@ -3,9 +3,9 @@ import time
 
 import pytest
 from click.testing import CliRunner
+from sparkmon import __main__
 
 from .utils import get_spark
-from sparkmon import __main__
 
 
 @pytest.fixture

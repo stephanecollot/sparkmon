@@ -28,10 +28,9 @@ from typing import Optional
 from typing import Union
 
 import requests
+import sparkmon
 import urllib3
 from pyspark.sql import SparkSession
-
-import sparkmon
 
 
 class SparkMon(threading.Thread):

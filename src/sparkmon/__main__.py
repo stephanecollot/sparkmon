@@ -1,6 +1,5 @@
 """Command-line interface."""
 import click
-
 import sparkmon
 
 

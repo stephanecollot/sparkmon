@@ -21,7 +21,6 @@ from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt
-
 from sparkmon import Application
 from sparkmon.mlflow_utils import log_file
 
