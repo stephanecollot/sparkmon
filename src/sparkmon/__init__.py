@@ -6,3 +6,4 @@ from .plotting import *  # noqa
 # Needs to be the end:
 from . import callbacks  # noqa
 from . import mlflow_utils  # noqa
+from . import logger  # noqa
