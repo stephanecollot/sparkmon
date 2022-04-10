@@ -95,6 +95,8 @@ class SparkMon(threading.Thread):
                 return t.is_alive()
 
     def should_stop(self) -> bool:
+        """Check if we should stop the thread loop."""
+
         # This is a Thread class (non daemon) meaning it can run for ever and block the exit of Python at the end.
         # This is why we check if the main thread is finished to stop SparkMon in a smooth manner at exit:
         if not self.is_main_thread_alive():
