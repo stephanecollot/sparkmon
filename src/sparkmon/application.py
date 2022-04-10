@@ -31,6 +31,7 @@ import urlpath
 from pyspark.sql import SparkSession
 
 import sparkmon
+from sparkmon.logger import log
 from sparkmon.utils import flatten_dict
 from sparkmon.utils import get_memory_process
 from sparkmon.utils import get_memory_user
@@ -87,7 +88,7 @@ class Application:
     def parse_db(self) -> None:
         """Re-parse the full executors_db, usefull if you change the parsing function, for development."""
         if not self.debug:
-            print("sparkmon: Warning, parse_db should be used with debug=True")
+            log.warning("parse_db should be used with debug=True")
         for t, executors_df in self.executors_db.items():
             self.timeseries_db[t].update(self.parse_executors(executors_df))
 
@@ -226,6 +227,7 @@ class Application:
 def get_application_ids(web_url: str = WEB_URL) -> pd.DataFrame:
     """Retrieve available application id."""
     applications_df = pd.read_json(urlpath.URL(web_url, API_APPLICATIONS_LINK))
+    log.info(f"applications_df:\n{applications_df}")
     return applications_df
 
 

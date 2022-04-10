@@ -32,6 +32,7 @@ import urllib3
 from pyspark.sql import SparkSession
 
 import sparkmon
+from sparkmon.logger import log
 
 
 class SparkMon(threading.Thread):
@@ -93,22 +94,28 @@ class SparkMon(threading.Thread):
             if t.name == "MainThread":
                 return t.is_alive()
 
+    def should_stop(self) -> bool:
+        # This is a Thread class (non daemon) meaning it can run for ever and block the exit of Python at the end.
+        # This is why we check if the main thread is finished to stop SparkMon in a smooth manner at exit:
+        if not self.is_main_thread_alive():
+            self.stop()
+
+        return self.stopped()
+
     def run(self) -> None:
         """Overrides Thread method."""
         self.start_time = time.time()
 
         while True:
-            if self.stopped():
+            if self.should_stop():
                 return
 
-            # This is a Thread class (non daemon) meaning it can run for ever and block the exit of Python at the end.
-            # This is why we check if the main thread is finished to stop SparkMon in a smooth manner at exit:
-            if not self.is_main_thread_alive():
-                self.stop()
-
             # We wait at the beginning of the loop, and not at the end,
-            # to let the Spark session start and MLflow run at the beginning
+            # to let the Spark session starts and MLflow run initializes at the beginning
             time.sleep(self.period)
+
+            if self.should_stop():
+                return
 
             # Updating the application DB
             try:
@@ -129,18 +136,16 @@ class SparkMon(threading.Thread):
                 # so that the main Python process can exit smoothly
                 elapsed_sec = time.time() - self.start_time
                 if elapsed_sec > self.timeout_sec:
-                    # Not need to print if we exited or stopped
+                    # Not need to log if we exited or stopped
                     if not self.stopped():
-                        print(
-                            f"sparkmon: Info, Spark application not available anymore, stopping monitoring. (Exception: {ex})"
-                        )
+                        log.info(f"Spark application not available anymore, stopping monitoring. (Exception: {ex})")
                     self.stop()
                     return
 
             # Run the callback
             self.callbacks_run()
 
-            if self.stopped():
+            if self.should_stop():
                 return
 
             self.updateEvent.set()
