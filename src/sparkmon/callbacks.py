@@ -23,6 +23,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from sparkmon import Application
+from sparkmon.logger import log
 from sparkmon.mlflow_utils import log_file
 
 
@@ -37,7 +38,7 @@ def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
     # To avoid the following error: "RuntimeError: main thread is not in main loop"
     backend = "agg"
     if matplotlib.get_backend() != backend:
-        print("set backend")
+        log.info(f"set backend: {backend}")
         plt.switch_backend(backend)
 
     fig = application.plot()
@@ -54,7 +55,7 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
     # To avoid the following error: "RuntimeError: main thread is not in main loop"
     backend = "agg"
     if matplotlib.get_backend() != backend:
-        print("set backend")
+        log.info(f"set backend: {backend}")
         plt.switch_backend(backend)
 
     fig = application.plot()
