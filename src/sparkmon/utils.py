@@ -25,6 +25,8 @@ from typing import Any
 
 import psutil
 
+from sparkmon.logger import log
+
 
 def convert_size(size_bytes) -> str:
     """Convert bytes in human readble string.
@@ -54,7 +56,7 @@ def get_memory_process() -> Any:
 def get_memory_user() -> Any:
     """Get memory usage in bytes of all process of the current user."""
     user = getpass.getuser()
-    # print(user)
+    log.debug(user)
 
     total = 0
     for p in psutil.process_iter():

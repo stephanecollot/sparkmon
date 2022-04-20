@@ -123,6 +123,16 @@ To run linting and code formatting checks before commiting your change, you can 
 
    $ nox --session=pre-commit -- install
 
+Recommended way to run linting and code formatting:
+.. code:: console
+
+   $ # with python 3.7
+   $ git add -u
+   $ nox --session=pre-commit
+   $ git add -u
+   $ git commit -m "" --no-verify
+
+
 It is recommended to open an issue before starting work on anything.
 This will allow a chance to talk it over with the owners and validate your approach.
 
