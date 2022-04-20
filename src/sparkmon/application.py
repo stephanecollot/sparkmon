@@ -213,6 +213,7 @@ class Application:
     def get_timeseries_db_df(self) -> pd.DataFrame:
         """Return timeseries_db info into a DataFrame."""
         timeseries_db_df = pd.DataFrame(self.timeseries_db).T
+        timeseries_db_df = timeseries_db_df.index.rename("timestamp")
         return timeseries_db_df
 
     def log_all(self) -> None:
