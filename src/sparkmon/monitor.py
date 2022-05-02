@@ -80,6 +80,11 @@ class SparkMon(threading.Thread):
         self.updateEvent = threading.Event()
         self.timeout_sec = 20
 
+        for t in threading.enumerate():
+            if t.name == "MainThread":
+                self.main_thread = t
+                break
+
     def stop(self) -> None:
         """Don't continue to run the loop, and exit safely the thread."""
         self.stop_event.set()
@@ -90,9 +95,7 @@ class SparkMon(threading.Thread):
 
     def is_main_thread_alive(self) -> bool:
         """Check if the main thread is alive."""
-        for t in threading.enumerate():
-            if t.name == "MainThread":
-                return t.is_alive()
+        return self.main_thread.is_alive()
 
     def should_stop(self) -> bool:
         """Check if we should stop the thread loop."""
@@ -107,14 +110,10 @@ class SparkMon(threading.Thread):
         """Overrides Thread method."""
         self.start_time = time.time()
 
-        while True:
-            if self.should_stop():
-                return
-
-            # We wait at the beginning of the loop, and not at the end,
-            # to let the Spark session starts and MLflow run initializes at the beginning
-            time.sleep(self.period)
-
+        # We wait at the beginning of the loop, and not at the end,
+        # to let the Spark session starts and MLflow run initializes at the beginning.
+        # It is better to use join on the main_thread than a sleep() or a wait() because it is delaying the exit
+        while not self.main_thread.join(self.period):
             if self.should_stop():
                 return
 
