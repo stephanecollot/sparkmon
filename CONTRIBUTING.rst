@@ -154,7 +154,7 @@ Make a new branch only to make the release and run `poetry version`, as follow:
    $ git checkout -b release_<version>
    $ poetry version <version>
    $ git add pyproject.toml
-   $ git commit -m "<project> <version>"
+   $ git commit -m "sparkmon <version>"
    $ git push
 
 Then make a pull request, and merge it to master.
