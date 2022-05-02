@@ -26,6 +26,8 @@ from sparkmon import Application
 from sparkmon.logger import log
 from sparkmon.mlflow_utils import log_file
 
+MLFLOW_DIR = "sparkmon"  # default MlFlow artifactory directory
+
 
 def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
     """Plot and save to image.
@@ -47,7 +49,7 @@ def plot_to_image(application: Application, path: str = "sparkmon.png") -> None:
     plt.close(fig)
 
 
-def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") -> None:
+def plot_to_mlflow(application: Application, directory: str = MLFLOW_DIR) -> None:
     """Log image to mlflow.
 
     Not compatible with live_plot_notebook().
@@ -59,7 +61,7 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
         plt.switch_backend(backend)
 
     fig = application.plot()
-    with log_file(path) as fp:
+    with log_file(directory + "/plot.png") as fp:
         fig.savefig(fp.name)
         """
         We some time get this exception:
@@ -71,28 +73,28 @@ def plot_to_mlflow(application: Application, path: str = "sparkmon/plot.png") ->
     plt.close(fig)
 
 
-def log_timeseries_db_to_mlflow(application: Application, path: str = "sparkmon/timeseries.csv") -> None:
+def log_timeseries_db_to_mlflow(application: Application, directory: str = MLFLOW_DIR) -> None:
     """Log timeseries_db to mlflow."""
     timeseries_db_df = application.get_timeseries_db_df()
-    with log_file(path) as fp:
+    with log_file(directory + "/timeseries.csv") as fp:
         timeseries_db_df.to_csv(fp)  # the index contains the timestamp
 
 
-def log_tasks_to_mlflow(application: Application, path: str = "sparkmon/tasks.csv") -> None:
+def log_tasks_to_mlflow(application: Application, directory: str = MLFLOW_DIR) -> None:
     """Log tasks to mlflow."""
-    with log_file(path) as fp:
+    with log_file(directory + "/tasks.csv") as fp:
         application.get_tasks_df().to_csv(fp, index=False)  # no relevant info in the index
 
 
-def log_stages_to_mlflow(application: Application, path: str = "sparkmon/stages.csv") -> None:
+def log_stages_to_mlflow(application: Application, directory: str = MLFLOW_DIR) -> None:
     """Log tasks to mlflow."""
-    with log_file(path) as fp:
+    with log_file(directory + "/stages.csv") as fp:
         application.stages_df.to_csv(fp, index=False)  # no relevant info in the index
 
 
-def log_to_mlflow(application: Application) -> None:
+def log_to_mlflow(application: Application, directory: str = MLFLOW_DIR) -> None:
     """Log to mlflow."""
-    plot_to_mlflow(application)
-    log_timeseries_db_to_mlflow(application)
-    log_tasks_to_mlflow(application)
-    log_stages_to_mlflow(application)
+    plot_to_mlflow(application, directory)
+    log_timeseries_db_to_mlflow(application, directory)
+    log_tasks_to_mlflow(application, directory)
+    log_stages_to_mlflow(application, directory)
