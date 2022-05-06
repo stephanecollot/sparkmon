@@ -73,7 +73,10 @@ class SparkMon(threading.Thread):
             self.application = sparkmon.application.create_application_from_spark(application_or_spark)
         else:
             raise TypeError(f"First argument `application_or_spark` is unsupported type {type(application_or_spark)}")
-        self.application.title_prefix = title_prefix
+        if title_prefix != "" and title_prefix is not None:
+            self.application.title_prefix = (
+                title_prefix  # remark: it can overwrite application if given by application_or_spark
+            )
         self.application_lock = threading.Lock()
         self.period = period
         if callbacks is None:
