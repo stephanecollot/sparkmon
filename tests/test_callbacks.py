@@ -71,6 +71,7 @@ def test_mlflow_directory() -> None:
     mon = sparkmon.SparkMon(
         application,
         period=1,
+        title_prefix="sparkmon2 title ",
         callbacks=[partial(sparkmon.callbacks.log_to_mlflow, directory="sparkmon2")],
     )
     mon.start()
