@@ -37,10 +37,10 @@ def test_plot_to_image() -> None:
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
-    mon = sparkmon.SparkMon(application, period=3, callbacks=[sparkmon.callbacks.plot_to_image])
+    mon = sparkmon.SparkMon(application, period=1, callbacks=[sparkmon.callbacks.plot_to_image])
     mon.start()
 
-    time.sleep(14)
+    time.sleep(5)
     mon.stop()
     assert mon.update_cnt >= 1
 
@@ -51,12 +51,12 @@ def test_mlflow() -> None:
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
-    mon = sparkmon.SparkMon(application, period=3, callbacks=[sparkmon.callbacks.log_to_mlflow])
+    mon = sparkmon.SparkMon(application, period=1, callbacks=[sparkmon.callbacks.log_to_mlflow])
     mon.start()
 
-    time.sleep(14)
+    time.sleep(5)
     mon.stop()
-    assert mon.update_cnt >= 2
+    assert mon.update_cnt >= 1
 
     active_run = sparkmon.mlflow_utils.active_run()
     mlflow.end_run()
@@ -78,7 +78,7 @@ def test_mlflow_directory() -> None:
     )
     mon.start()
 
-    time.sleep(3)
+    time.sleep(5)
     mon.stop()
     assert mon.update_cnt >= 1
 
