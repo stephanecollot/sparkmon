@@ -58,7 +58,7 @@ def test_mlflow() -> None:
     assert mon.update_cnt >= 1
 
     plot_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon/plot.png"))
-    time_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon/timeseries.png"))
+    time_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon/timeseries.csv"))
     assert plot_path.stat().st_size > 100
     assert time_path.stat().st_size > 10
 
@@ -80,7 +80,7 @@ def test_mlflow_directory() -> None:
     assert mon.update_cnt >= 1
 
     plot_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon2/plot.png"))
-    time_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon2/timeseries.png"))
+    time_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon2/timeseries.csv"))
     assert plot_path.stat().st_size > 100
     assert time_path.stat().st_size > 10
 
