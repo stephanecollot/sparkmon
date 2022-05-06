@@ -1,5 +1,6 @@
 """Test cases for the application module."""
 import time
+from functools import partial
 
 import sparkmon
 from .utils import get_random_df
@@ -112,3 +113,18 @@ def test_stages_tasks() -> None:
     assert len(mon.application.get_tasks_df()) > 10
     assert len(mon.application.stages_df) > 2
     mon.stop()
+
+
+def test_sparkmon_title() -> None:
+    """Basic test."""
+    spark = get_spark()
+
+    with sparkmon.SparkMon(
+        spark,
+        period=2,
+        callbacks=[partial(sparkmon.callbacks.log_to_mlflow, directory="sparkmon2")],
+        title_prefix="test prefix ",
+    ) as mon:
+        time.sleep(5)
+
+    assert mon.update_cnt == 2

@@ -43,7 +43,9 @@ WEB_URL = "http://localhost:4040"
 class Application:
     """This class is an helper to query Spark API and save historical."""
 
-    def __init__(self, application_id: str, web_url: str = WEB_URL, debug: bool = False) -> None:
+    def __init__(
+        self, application_id: str, web_url: str = WEB_URL, debug: bool = False, title_prefix: str = ""
+    ) -> None:
         """An application is define by the Spark UI link and an application id.
 
         :param application_id: Spark applicationId
@@ -53,6 +55,7 @@ class Application:
         self.web_url = web_url
         self.application_id = application_id
         self.debug = debug
+        self.title_prefix = title_prefix
 
         self.executors_db: Dict[Any, Any] = {}  # The key is timestamp
         self.timeseries_db: Dict[Any, Any] = {}  # The key is timestamp
@@ -92,9 +95,14 @@ class Application:
         for t, executors_df in self.executors_db.items():
             self.timeseries_db[t].update(self.parse_executors(executors_df))
 
+    def get_figure_title(self):
+        """Get figure title."""
+        now = datetime.now()
+        return f"{self.title_prefix}{self.application_id} - {now.strftime('%Y/%m/%d %H:%M:%S')}"
+
     def plot(self) -> matplotlib.figure.Figure:
         """Plotting."""
-        return sparkmon.plot_timeseries(self.get_timeseries_db_df(), title=self.application_id)
+        return sparkmon.plot_timeseries(self.get_timeseries_db_df(), title=self.get_figure_title())
 
     @staticmethod
     def parse_executors(executors_df: pd.DataFrame) -> Dict[Any, Any]:

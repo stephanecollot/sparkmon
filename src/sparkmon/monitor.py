@@ -61,6 +61,7 @@ class SparkMon(threading.Thread):
         application_or_spark: Union[sparkmon.Application, SparkSession],
         period: int = 20,
         callbacks: Optional[List[Callable[..., Any]]] = None,
+        title_prefix: str = "",
     ) -> None:
         """Constructor, initializes base class Thread."""
         threading.Thread.__init__(self)
@@ -72,6 +73,7 @@ class SparkMon(threading.Thread):
             self.application = sparkmon.application.create_application_from_spark(application_or_spark)
         else:
             raise TypeError(f"First argument `application_or_spark` is unsupported type {type(application_or_spark)}")
+        self.application.title_prefix = title_prefix
         self.application_lock = threading.Lock()
         self.period = period
         if callbacks is None:
