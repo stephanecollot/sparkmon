@@ -2,6 +2,7 @@
 import pathlib
 import time
 import urllib
+from functools import partial
 
 import mlflow
 
@@ -61,3 +62,38 @@ def test_mlflow() -> None:
     artifact_uri = file_uri_to_path(active_run.info.artifact_uri)
     assert (artifact_uri / "sparkmon/plot.png").stat().st_size > 100
     assert (artifact_uri / "sparkmon/timeseries.csv").stat().st_size > 10
+
+
+def test_mlflow_directory() -> None:
+    """Basic test."""
+    spark = get_spark()
+    application = sparkmon.create_application_from_spark(spark)
+
+    mon = sparkmon.SparkMon(
+        application,
+        period=1,
+        callbacks=[partial(sparkmon.callbacks.log_to_mlflow, directory="sparkmon2")],
+    )
+    mon.start()
+
+    time.sleep(3)
+    mon.stop()
+    assert mon.update_cnt >= 1
+
+    active_run = sparkmon.mlflow_utils.active_run()
+    mlflow.end_run()
+    artifact_uri = file_uri_to_path(active_run.info.artifact_uri)
+    assert (artifact_uri / "sparkmon2/plot.png").stat().st_size > 100
+    assert (artifact_uri / "sparkmon2/timeseries.csv").stat().st_size > 10
+
+
+def test_sparkmon_title() -> None:
+    """Basic test."""
+    spark = get_spark()
+
+    with sparkmon.SparkMon(
+        spark, period=1, title_prefix="test prefix ", callbacks=[sparkmon.callbacks.plot_to_image]
+    ) as mon:
+        time.sleep(3)
+
+    assert mon.update_cnt >= 1

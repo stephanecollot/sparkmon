@@ -1,6 +1,5 @@
 """Test cases for the application module."""
 import time
-from functools import partial
 
 import sparkmon
 from .utils import get_random_df
@@ -25,12 +24,12 @@ def test_create_application_from_link() -> None:
     get_spark()
     application = sparkmon.create_application_from_link()
 
-    mon = sparkmon.SparkMon(application, period=5)
+    mon = sparkmon.SparkMon(application, period=1)
     mon.start()
 
-    time.sleep(14)
+    time.sleep(3)
     mon.stop()
-    assert mon.update_cnt == 2
+    assert mon.update_cnt >= 1
 
 
 def test_create_context_manager_application_from_link() -> None:
@@ -38,20 +37,20 @@ def test_create_context_manager_application_from_link() -> None:
     get_spark()
     application = sparkmon.create_application_from_link()
 
-    with sparkmon.SparkMon(application, period=5) as mon:
-        time.sleep(14)
+    with sparkmon.SparkMon(application, period=1) as mon:
+        time.sleep(3)
 
-    assert mon.update_cnt == 2
+    assert mon.update_cnt >= 2
 
 
 def test_sparkmon_direct_from_spark() -> None:
     """Basic test."""
     spark = get_spark()
 
-    with sparkmon.SparkMon(spark, period=5) as mon:
-        time.sleep(14)
+    with sparkmon.SparkMon(spark, period=1) as mon:
+        time.sleep(3)
 
-    assert mon.update_cnt == 2
+    assert mon.update_cnt >= 2
 
     try:
         sparkmon.SparkMon("string", period=5)
@@ -113,18 +112,3 @@ def test_stages_tasks() -> None:
     assert len(mon.application.get_tasks_df()) > 10
     assert len(mon.application.stages_df) > 2
     mon.stop()
-
-
-def test_sparkmon_title() -> None:
-    """Basic test."""
-    spark = get_spark()
-
-    with sparkmon.SparkMon(
-        spark,
-        period=2,
-        callbacks=[partial(sparkmon.callbacks.log_to_mlflow, directory="sparkmon2")],
-        title_prefix="test prefix ",
-    ) as mon:
-        time.sleep(5)
-
-    assert mon.update_cnt == 2
