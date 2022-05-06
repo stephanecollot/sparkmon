@@ -76,7 +76,7 @@ def test_mlflow_directory_title() -> None:
     )
     mon.start()
 
-    time.sleep(6)
+    time.sleep(7)
     mon.stop()
     time.sleep(3)
     assert mon.update_cnt >= 1
