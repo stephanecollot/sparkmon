@@ -47,7 +47,9 @@ def test_plot_to_image() -> None:
 
 def test_mlflow() -> None:
     """Basic test."""
-    mlflow.start_run()
+    if sparkmon.mlflow_utils.active_run() is None:
+        mlflow.start_run()
+
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
@@ -67,7 +69,9 @@ def test_mlflow() -> None:
 
 def test_mlflow_directory() -> None:
     """Basic test."""
-    mlflow.start_run()
+    if sparkmon.mlflow_utils.active_run() is None:
+        mlflow.start_run()
+
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
