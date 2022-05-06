@@ -56,7 +56,7 @@ def test_mlflow() -> None:
     mon = sparkmon.SparkMon(application, period=1, callbacks=[sparkmon.callbacks.log_to_mlflow])
     mon.start()
 
-    time.sleep(5)
+    time.sleep(6)
     mon.stop()
     assert mon.update_cnt >= 1
 
@@ -82,7 +82,7 @@ def test_mlflow_directory() -> None:
     )
     mon.start()
 
-    time.sleep(5)
+    time.sleep(6)
     mon.stop()
     assert mon.update_cnt >= 1
 

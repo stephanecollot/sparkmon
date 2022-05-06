@@ -107,7 +107,7 @@ def test_stages_tasks() -> None:
     df = df.groupby("A").mean()
     df.toPandas()
 
-    time.sleep(3)
+    time.sleep(4)
 
     assert len(mon.application.get_tasks_df()) > 10
     assert len(mon.application.stages_df) > 2
