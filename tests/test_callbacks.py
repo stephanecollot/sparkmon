@@ -47,9 +47,6 @@ def test_plot_to_image() -> None:
 
 def test_mlflow() -> None:
     """Basic test."""
-    if mlflow.active_run() is None:
-        mlflow.start_run()
-
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
@@ -60,18 +57,14 @@ def test_mlflow() -> None:
     mon.stop()
     assert mon.update_cnt >= 1
 
-    active_run = sparkmon.mlflow_utils.active_run()
-    mlflow.end_run()
-    artifact_uri = file_uri_to_path(active_run.info.artifact_uri)
-    assert (artifact_uri / "sparkmon/plot.png").stat().st_size > 100
-    assert (artifact_uri / "sparkmon/timeseries.csv").stat().st_size > 10
+    plot_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon/plot.png"))
+    time_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon/timeseries.png"))
+    assert plot_path.stat().st_size > 100
+    assert time_path.stat().st_size > 10
 
 
 def test_mlflow_directory() -> None:
     """Basic test."""
-    if mlflow.active_run() is None:
-        mlflow.start_run()
-
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
 
@@ -86,11 +79,10 @@ def test_mlflow_directory() -> None:
     mon.stop()
     assert mon.update_cnt >= 1
 
-    active_run = sparkmon.mlflow_utils.active_run()
-    mlflow.end_run()
-    artifact_uri = file_uri_to_path(active_run.info.artifact_uri)
-    assert (artifact_uri / "sparkmon2/plot.png").stat().st_size > 100
-    assert (artifact_uri / "sparkmon2/timeseries.csv").stat().st_size > 10
+    plot_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon2/plot.png"))
+    time_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon2/timeseries.png"))
+    assert plot_path.stat().st_size > 100
+    assert time_path.stat().st_size > 10
 
 
 def test_sparkmon_title() -> None:
