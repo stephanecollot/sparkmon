@@ -63,7 +63,7 @@ def test_mlflow() -> None:
     assert time_path.stat().st_size > 10
 
 
-def test_mlflow_directory() -> None:
+def test_mlflow_directory_title() -> None:
     """Basic test."""
     spark = get_spark()
     application = sparkmon.create_application_from_spark(spark)
@@ -78,21 +78,10 @@ def test_mlflow_directory() -> None:
 
     time.sleep(6)
     mon.stop()
+    time.sleep(3)
     assert mon.update_cnt >= 1
 
     plot_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon2/plot.png"))
     time_path = file_uri_to_path(mlflow.get_artifact_uri(artifact_path="sparkmon2/timeseries.csv"))
     assert plot_path.stat().st_size > 100
     assert time_path.stat().st_size > 10
-
-
-def test_sparkmon_title() -> None:
-    """Basic test."""
-    spark = get_spark()
-
-    with sparkmon.SparkMon(
-        spark, period=1, title_prefix="test prefix ", callbacks=[sparkmon.callbacks.plot_to_image]
-    ) as mon:
-        time.sleep(3)
-
-    assert mon.update_cnt >= 1
