@@ -35,7 +35,7 @@ sparkmon
 Description
 -----------
 
-``sparkmon`` is a Python package to monitor Spark applications. You can see it as an advanced Spark UI, that keeps track all of `Spark REST API <SparkREST_>`_ metrics **over time**, which makes it quite unique compare to other solutions (see comparison_ below). It is specifically useful to do memory profiling, including Python UDF memory.
+``sparkmon`` is a Python package to monitor Spark applications. You can see it as an advanced Spark UI, that keeps track all of `Spark REST API <SparkREST_>`_ metrics **over time**, which makes it quite unique compared to other solutions (see comparison_ below). It is specifically useful to do memory profiling, including Python UDF memory.
 
 
 Features
